@@ -1,0 +1,233 @@
+
+/* =====================================
+   PREMIUM BHAKTI SEVA DHAM ENHANCEMENTS
+   Add below your existing CSS
+===================================== */
+
+.home-page {
+  color: #49251f;
+  background: #fffaf1;
+  min-height: 100vh;
+}
+
+.hero-section {
+  padding: 90px 20px;
+  text-align: center;
+  background: linear-gradient(135deg, #fff0e6, #f9dfb0);
+}
+
+.welcome-badge {
+  display: inline-block;
+  padding: 10px 18px;
+  border-radius: 30px;
+  color: #9a481d;
+  background: white;
+  font-weight: bold;
+  letter-spacing: 1px;
+}
+
+.hero-section h1 {
+  font-size: clamp(40px, 7vw, 72px);
+  margin: 24px 0;
+  color: #0d1924;
+}
+
+.hero-description {
+  max-width: 650px;
+  margin: 0 auto;
+  line-height: 1.8;
+  color: #0b0011;
+}
+
+.hero-actions,
+.social-links {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 14px;
+  margin-top: 30px;
+}
+
+.primary-button,
+.secondary-button,
+.social-links a {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  padding: 13px 22px;
+  border-radius: 30px;
+  text-decoration: none;
+  font-weight: bold;
+}
+
+.primary-button {
+  background: #a64c22;
+  color: white;
+}
+
+.secondary-button {
+  background: white;
+  color: #79362b;
+  border: 1px solid #e5c69d;
+}
+
+.activities-section {
+  max-width: 1150px;
+  margin: auto;
+  padding: 75px 22px;
+}
+
+.section-heading {
+  text-align: center;
+  margin-bottom: 38px;
+}
+
+.section-heading span {
+  color: #a65b2c;
+  font-size: 12px;
+  font-weight: bold;
+  letter-spacing: 2px;
+}
+
+.section-heading h2,
+.connect-section h2 {
+  font-size: clamp(28px, 4vw, 38px);
+  color: #79362b;
+}
+
+.section-heading p,
+.connect-section p {
+  color: #76645b;
+  line-height: 1.8;
+}
+
+.activity-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 24px;
+}
+
+.activity-card {
+  padding: 28px;
+  background: white;
+  border: 1px solid #f0dfc6;
+  border-radius: 20px;
+  box-shadow: 0 8px 25px #6b351008;
+}
+
+.activity-icon {
+  display: grid;
+  place-items: center;
+  width: 58px;
+  height: 58px;
+  color: #a64c22;
+  background: #fff0df;
+  border-radius: 15px;
+}
+
+.activity-card h3 {
+  margin-top: 22px;
+}
+
+.activity-card p {
+  color: #76645b;
+  line-height: 1.8;
+  font-size: 14px;
+}
+
+.activity-card a {
+  color: #a64c22;
+  text-decoration: none;
+  font-weight: bold;
+}
+
+.connect-section {
+  text-align: center;
+  padding: 55px 20px;
+  background: #fff0e3;
+}
+
+.social-links a {
+  background: #a64c22;
+  color: white;
+}
+
+.home-footer {
+  padding: 32px 20px;
+  text-align: center;
+  background: #49251f;
+  color: white;
+}
+
+.home-footer p {
+  color: #f0d7c5;
+}
+
+@media (max-width: 750px) {
+  .activity-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .hero-section {
+    padding: 65px 20px;
+  }
+}
+
+
+/* Radha Krishna background for Home Page hero */
+.hero-section {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  background: #fff0dc;
+}
+
+
+.hero-section::before {
+  content: "";
+  position: absolute;
+  inset: -2px;
+  z-index: -2;
+  background-image: url("/images/radhaRaman.jpg");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  filter: blur(0.5px);
+  transform: scale(1.01);
+}
+
+.hero-section::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: rgba(255, 248, 237, 0.12);
+  pointer-events: none;
+}
+/* Keep the heading, description and buttons sharp */
+.hero-section > * {
+  position: relative;
+}
+
+/* Improve the hero section spacing */
+.hero-section {
+  padding-top: 80px;
+  padding-bottom: 90px;
+}
+
+/* Mobile responsive styling */
+@media (max-width: 600px) {
+  .hero-section {
+    padding: 55px 18px;
+  }
+
+  .hero-section::before {
+    background-position: center;
+    filter: blur(3px);
+  }
+
+  .hero-section::after {
+    background: rgba(255, 245, 228, 0.82);
+  }
+}

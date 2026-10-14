@@ -1,0 +1,165 @@
+
+.seva-page {
+  min-height: 100vh;
+  padding: 55px 18px;
+  background:
+    radial-gradient(ellipse at top, #ffedcf, transparent 55%),
+    #fffaf2;
+  color: #54212b;
+  font-family: Georgia, "Times New Roman", serif;
+}
+
+.seva-header {
+  max-width: 680px;
+  margin: 0 auto 32px;
+  text-align: center;
+}
+
+.seva-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  border: 1px solid #e8c783;
+  border-radius: 40px;
+  background: #fff2d7;
+  color: #92501f;
+  font: 700 12px Arial, sans-serif;
+}
+
+.seva-header h1 {
+  margin: 22px 0 12px;
+  font-size: clamp(34px, 6vw, 48px);
+}
+
+.seva-header p {
+  color: #816b60;
+  font: 15px/1.8 Arial, sans-serif;
+}
+
+.seva-card {
+  max-width: 540px;
+  margin: 0 auto;
+  padding: 32px;
+  border: 1px solid #ecddc7;
+  border-radius: 24px;
+  background: white;
+  box-shadow: 0 15px 40px #6a32100c;
+}
+
+.seva-icon {
+  display: grid;
+  place-items: center;
+  width: 76px;
+  height: 76px;
+  margin: 0 auto 18px;
+  border-radius: 50%;
+  background: #fff0d5;
+  color: #a96520;
+}
+
+.seva-card h2 {
+  text-align: center;
+  font-size: 25px;
+}
+
+.seva-description {
+  color: #816b60;
+  text-align: center;
+  font: 14px/1.8 Arial, sans-serif;
+}
+
+.seva-card form {
+  display: grid;
+  gap: 13px;
+  margin-top: 28px;
+}
+
+.seva-card label,
+.amount-label {
+  color: #54212b;
+  font: 700 14px Arial, sans-serif;
+}
+
+.seva-card input {
+  width: 100%;
+  min-height: 48px;
+  padding: 12px 14px;
+  border: 1px solid #e4d7c8;
+  border-radius: 12px;
+  font-size: 16px;
+}
+
+.amount-options {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.amount-options button {
+  min-height: 46px;
+  border: 1px solid #e5d6c4;
+  border-radius: 12px;
+  background: #fffaf2;
+  color: #762c3a;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.amount-options button.amount-active {
+  border-color: #762c3a;
+  background: #762c3a;
+  color: white;
+}
+
+.seva-submit {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  min-height: 50px;
+  margin-top: 10px;
+  border: 0;
+  border-radius: 12px;
+  background: #762c3a;
+  color: white;
+  font-weight: 700;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.seva-success {
+  padding: 22px 0;
+  color: #246b43;
+  text-align: center;
+  line-height: 1.8;
+}
+
+.seva-success button {
+  padding: 11px 25px;
+  border: 1px solid #d8c7b7;
+  border-radius: 10px;
+  background: #fffaf2;
+  cursor: pointer;
+}
+
+.seva-disclaimer {
+  margin-top: 24px;
+  color: #8d7a6d;
+  font: 12px/1.8 Arial, sans-serif;
+  text-align: center;
+}
+
+@media (max-width: 500px) {
+  .seva-page {
+    padding: 35px 13px;
+  }
+
+  .seva-card {
+    padding: 24px 17px;
+  }
+
+  .seva-header h1 {
+    font-size: 34px;
+  }
+}
