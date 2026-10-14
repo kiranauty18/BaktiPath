@@ -41,7 +41,7 @@ function Footer() {
         <Link to="/jap" className="hover:underline">📿 Naam Jap</Link>
       </nav>
 
-      <small className="text-gray-500 text-xs">© 2026 Bhakti Seva Dham. Designed for @dhiru.x.indresh.</small>
+      <small className="text-gray-500 text-xs">© 2026 Bhakti Seva Dham. Designed BY @Ki.ran_.ig</small>
     </footer>
   );
 }
