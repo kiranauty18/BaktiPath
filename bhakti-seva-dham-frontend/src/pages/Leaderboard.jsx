@@ -1,105 +1,59 @@
 import React, { useState, useEffect } from "react";
-import { Sparkles, Trophy, Award, Flame, User } from "lucide-react";
+import { Sparkles, Trophy, Award, Loader2 } from "lucide-react";
 import "./Leaderboard.css";
 
 export default function Leaderboard() {
-  const [topDevotees, setTopDevotees] = useState([]);
+  const [devotees, setDevotees] = useState([]);
   const [filter, setFilter] = useState("all"); // 'all' | 'quiz' | 'jap'
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const quizData = JSON.parse(
-      localStorage.getItem("quiz_leaderboard") || "[]",
-    );
-    const japData = JSON.parse(localStorage.getItem("jap_leaderboard") || "[]");
-
-    const devoteesMap = {};
-
-    quizData.forEach((item) => {
-      if (item && item.name) {
-        const key = item.name.trim().toLowerCase();
-        if (!devoteesMap[key]) {
-          devoteesMap[key] = {
-            name: item.name.trim(),
-            totalScore: 0,
-            quizScore: 0,
-            japScore: 0,
-          };
+    const fetchLeaderboard = async () => {
+      try {
+        setLoading(true);
+        const res = await fetch("http://localhost:5000/api/leaderboard");
+        const data = await res.json();
+        if (data.success && Array.isArray(data.devotees)) {
+          setDevotees(data.devotees);
         }
-        const pts = Number(item.score) || 0;
-        devoteesMap[key].quizScore += pts;
-        devoteesMap[key].totalScore += pts;
+      } catch (err) {
+        console.error("Failed to load leaderboard:", err);
+      } finally {
+        setLoading(false);
       }
-    });
+    };
 
-    japData.forEach((item) => {
-      if (item && item.name) {
-        const key = item.name.trim().toLowerCase();
-        if (!devoteesMap[key]) {
-          devoteesMap[key] = {
-            name: item.name.trim(),
-            totalScore: 0,
-            quizScore: 0,
-            japScore: 0,
-          };
-        }
-        const pts = Number(item.score) || 0;
-        devoteesMap[key].japScore += pts;
-        devoteesMap[key].totalScore += pts;
-      }
-    });
-
-    let combinedList = Object.values(devoteesMap);
-
-    // Clean mock data if user has no entries yet
-    if (combinedList.length === 0) {
-      combinedList = [
-        { name: "Kiran Auti", totalScore: 230, quizScore: 50, japScore: 180 },
-        {
-          name: "Anjali Sharma",
-          totalScore: 190,
-          quizScore: 40,
-          japScore: 150,
-        },
-        {
-          name: "Radha Raman Das",
-          totalScore: 160,
-          quizScore: 50,
-          japScore: 110,
-        },
-        { name: "Seema Verma", totalScore: 140, quizScore: 30, japScore: 110 },
-        { name: "Gopal Krishna", totalScore: 110, quizScore: 0, japScore: 110 },
-      ];
-    }
-
-    setTopDevotees(combinedList);
+    fetchLeaderboard();
   }, []);
 
-  const getFilteredList = () => {
-    let list = [...topDevotees];
+  // Sort devotees dynamically based on selected filter
+  const sortedDevotees = [...devotees].sort((a, b) => {
     if (filter === "quiz") {
-      list.sort((a, b) => b.quizScore - a.quizScore);
-    } else if (filter === "jap") {
-      list.sort((a, b) => b.japScore - a.japScore);
-    } else {
-      list.sort((a, b) => b.totalScore - a.totalScore);
+      return (b.quizScore || 0) - (a.quizScore || 0);
     }
-    return list;
-  };
+    if (filter === "jap") {
+      const aJap = (a.completedMalas || 0) * 108;
+      const bJap = (b.completedMalas || 0) * 108;
+      return bJap - aJap;
+    }
+    // Default: Total Score (or weeklyScore if active)
+    return (b.totalScore || 0) - (a.totalScore || 0);
+  });
 
-  const sortedList = getFilteredList();
-  const winner = sortedList[0] || {
+  const winner = sortedDevotees[0] || {
     name: "Devotee",
     totalScore: 0,
     quizScore: 0,
-    japScore: 0,
-  };
-  const getWinnerScore = () => {
-    if (filter === "quiz") return winner.quizScore;
-    if (filter === "jap") return winner.japScore;
-    return winner.totalScore;
+    completedMalas: 0,
   };
 
-  const runnersUp = sortedList.slice(1);
+  const getScore = (item) => {
+    if (filter === "quiz") return item.quizScore || 0;
+    if (filter === "jap") return (item.completedMalas || 0) * 108;
+    return item.totalScore || 0;
+  };
+
+  const runnersUp = sortedDevotees.slice(1);
 
   return (
     <div className="leaderboard-page">
@@ -142,47 +96,64 @@ export default function Leaderboard() {
           </div>
         </header>
 
-        {/* 1st Place Podium Plaque */}
-        <div className="podium-first-card">
-          <div className="podium-first-left">
-            <div className="trophy-badge">
-              <Trophy size={26} />
-            </div>
-            <div className="podium-meta">
-              <span className="podium-rank-tag">🏆 1st Rank Devotee</span>
-              <div className="podium-first-name">{winner.name}</div>
-            </div>
+        {loading ? (
+          <div
+            style={{ textAlign: "center", padding: "48px 0", color: "#d4af37" }}
+          >
+            <Loader2
+              className="animate-spin"
+              size={32}
+              style={{ margin: "0 auto 12px" }}
+            />
+            <p style={{ fontSize: "0.95rem", opacity: 0.85 }}>
+              Prasadam prapt ho raha hai...
+            </p>
           </div>
-          <div className="podium-first-points">
-            <strong>{getWinnerScore()}</strong> <span>Pts</span>
+        ) : sortedDevotees.length === 0 ? (
+          <div
+            style={{ textAlign: "center", padding: "40px 0", color: "#8c5825" }}
+          >
+            <p>Abhi tak koi devotee points darj nahi huye hain.</p>
           </div>
-        </div>
-
-        {/* Remaining Ranks List */}
-        <div className="rankings-grid">
-          {runnersUp.map((devotee, index) => {
-            const displayScore =
-              filter === "quiz"
-                ? devotee.quizScore
-                : filter === "jap"
-                  ? devotee.japScore
-                  : devotee.totalScore;
-
-            return (
-              <article key={index} className="ranking-plaque">
-                <div className="ranking-row">
-                  <div className="ranking-row-left">
-                    <span className="rank-number-badge">#{index + 2}</span>
-                    <span className="ranking-name">{devotee.name}</span>
-                  </div>
-                  <span className="ranking-points">
-                    <strong>{displayScore}</strong> Pts
-                  </span>
+        ) : (
+          <>
+            {/* 1st Place Podium Plaque */}
+            <div className="podium-first-card">
+              <div className="podium-first-left">
+                <div className="trophy-badge">
+                  <Trophy size={26} />
                 </div>
-              </article>
-            );
-          })}
-        </div>
+                <div className="podium-meta">
+                  <span className="podium-rank-tag">🏆 1st Rank Devotee</span>
+                  <div className="podium-first-name">{winner.name}</div>
+                </div>
+              </div>
+              <div className="podium-first-points">
+                <strong>{getScore(winner)}</strong> <span>Pts</span>
+              </div>
+            </div>
+
+            {/* Remaining Ranks List */}
+            <div className="rankings-grid">
+              {runnersUp.map((devoteeItem, index) => (
+                <article
+                  key={devoteeItem._id || index}
+                  className="ranking-plaque"
+                >
+                  <div className="ranking-row">
+                    <div className="ranking-row-left">
+                      <span className="rank-number-badge">#{index + 2}</span>
+                      <span className="ranking-name">{devoteeItem.name}</span>
+                    </div>
+                    <span className="ranking-points">
+                      <strong>{getScore(devoteeItem)}</strong> Pts
+                    </span>
+                  </div>
+                </article>
+              ))}
+            </div>
+          </>
+        )}
 
         {/* Footer Note */}
         <div className="scroll-footer-decor">

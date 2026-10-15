@@ -1,0 +1,208 @@
+.auth-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(10, 5, 5, 0.75);
+  backdrop-filter: blur(6px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 16px;
+  animation: authFadeIn 0.2s ease-out;
+}
+
+@keyframes authFadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.auth-modal {
+  position: relative;
+  background: radial-gradient(circle at top, #2b0b14 0%, #150308 100%);
+  border: 1px solid rgba(212, 175, 55, 0.45);
+  box-shadow:
+    0 16px 40px rgba(0, 0, 0, 0.6),
+    0 0 24px rgba(212, 175, 55, 0.15);
+  border-radius: 18px;
+  width: 100%;
+  max-width: 440px;
+  padding: 32px 28px;
+  color: #fff4e6;
+}
+
+.auth-close-btn {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(212, 175, 55, 0.2);
+  color: #d4af37;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.auth-close-btn:hover {
+  background: rgba(212, 175, 55, 0.2);
+  color: #ffd700;
+  transform: rotate(90deg);
+}
+
+.auth-header {
+  text-align: center;
+  margin-bottom: 22px;
+}
+
+.auth-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(212, 175, 55, 0.12);
+  border: 1px solid rgba(212, 175, 55, 0.35);
+  color: #ffd700;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 0.72rem;
+  letter-spacing: 1.5px;
+  font-weight: 700;
+  margin-bottom: 10px;
+}
+
+.auth-header h2 {
+  font-size: 1.6rem;
+  color: #ffd700;
+  margin: 0 0 6px;
+  font-family: inherit;
+  font-weight: 700;
+}
+
+.auth-header p {
+  font-size: 0.85rem;
+  color: rgba(255, 244, 230, 0.75);
+  margin: 0;
+  line-height: 1.4;
+}
+
+.auth-error-box {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(239, 68, 68, 0.18);
+  border: 1px solid rgba(239, 68, 68, 0.4);
+  color: #fca5a5;
+  padding: 10px 14px;
+  border-radius: 10px;
+  font-size: 0.82rem;
+  margin-bottom: 16px;
+}
+
+.auth-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.auth-input-group label {
+  display: block;
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  color: #d4af37;
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+
+.auth-input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.auth-icon {
+  position: absolute;
+  left: 14px;
+  color: rgba(212, 175, 55, 0.7);
+  pointer-events: none;
+}
+
+.auth-input-wrapper input {
+  width: 100%;
+  background: rgba(15, 3, 7, 0.7);
+  border: 1px solid rgba(212, 175, 55, 0.3);
+  border-radius: 10px;
+  padding: 12px 14px 12px 42px;
+  color: #fff4e6;
+  font-size: 0.92rem;
+  outline: none;
+  transition: all 0.2s;
+}
+
+.auth-input-wrapper input:focus {
+  border-color: #ffd700;
+  box-shadow: 0 0 10px rgba(212, 175, 55, 0.35);
+  background: rgba(15, 3, 7, 0.95);
+}
+
+.auth-submit-btn {
+  margin-top: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: linear-gradient(135deg, #d4af37 0%, #aa8014 100%);
+  color: #1a0409;
+  border: none;
+  border-radius: 10px;
+  padding: 13px;
+  font-size: 0.95rem;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 4px 14px rgba(212, 175, 55, 0.35);
+  transition: all 0.2s;
+}
+
+.auth-submit-btn:hover:not(:disabled) {
+  background: linear-gradient(135deg, #ffd700 0%, #c49619 100%);
+  transform: translateY(-1px);
+  box-shadow: 0 6px 18px rgba(212, 175, 55, 0.5);
+}
+
+.auth-submit-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.auth-toggle-footer {
+  margin-top: 20px;
+  text-align: center;
+  font-size: 0.85rem;
+  color: rgba(255, 244, 230, 0.75);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.auth-toggle-link {
+  background: none;
+  border: none;
+  color: #ffd700;
+  font-weight: 700;
+  cursor: pointer;
+  text-decoration: underline;
+  padding: 0;
+  font-size: 0.85rem;
+}
+
+.auth-toggle-link:hover {
+  color: #fff;
+}

@@ -1,12 +1,18 @@
+import React from "react";
 import { BrowserRouter, Routes, Route, Link } from "react-router-dom";
 
 import Navbar from "./components/Navbar";
+import AuthModal from "./components/AuthModal";
+import { useAuth } from "./context/AuthContext";
 import Home from "./pages/Home";
 import Quiz from "./pages/Quiz";
 import Leaderboard from "./pages/Leaderboard";
 import Seva from "./pages/Seva";
 import KathaBhajans from "./pages/KathaBhajans";
 import NaamJap from "./pages/NaamJap";
+import ProtectedRoute from "./components/ProtectedRoute";
+import Profile from "./pages/Profile";
+import AdminDashboard from "./pages/AdminDashboard";
 
 function NotFound() {
   return (
@@ -31,7 +37,6 @@ function Footer() {
   return (
     <footer className="w-full bg-[#4A0E17] text-[#FFF8ED] py-10 px-4 border-t border-[#D4AF37]/30">
       <div className="max-w-4xl mx-auto flex flex-col items-center justify-center text-center space-y-4">
-        {/* Brand & Symbol */}
         <div className="flex items-center justify-center gap-2.5">
           <span className="w-9 h-9 rounded-full bg-[#FF8C00] flex items-center justify-center text-white font-bold text-base shadow-sm">
             ॐ
@@ -41,13 +46,11 @@ function Footer() {
           </strong>
         </div>
 
-        {/* Subtitle / Description */}
         <p className="text-xs text-[#EADDE0] max-w-lg leading-relaxed mx-auto">
           A place for devotion, spiritual learning, and selfless service. Shri
           Radha Raman &amp; Banke Bihari Seva.
         </p>
 
-        {/* Nav Links */}
         <nav
           className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-xs font-medium text-[#F4E08B] pt-1"
           aria-label="Footer navigation"
@@ -72,7 +75,6 @@ function Footer() {
           </Link>
         </nav>
 
-        {/* Copyright */}
         <small className="block text-[#A8929A] text-[11px] pt-2 border-t border-white/10 w-full max-w-xs mx-auto">
           © 2026 Bhakti Seva Dham. Designed BY @Ki.ran_.ig
         </small>
@@ -82,20 +84,84 @@ function Footer() {
 }
 
 export default function App() {
+  const { isAuthModalOpen, closeAuthModal } = useAuth();
+
   return (
     <BrowserRouter>
       <div className="app-shell flex flex-col min-h-screen bg-spiritual-cream font-sans">
         <Navbar />
 
+        {/* Global Modal - Works from Navbar, Home hero buttons, and cards */}
+        <AuthModal isOpen={isAuthModalOpen} onClose={closeAuthModal} />
+
         <main className="app-content flex-grow">
           <Routes>
             <Route path="/" element={<Home />} />
-            <Route path="/quiz" element={<Quiz />} />
-            <Route path="/leaderboard" element={<Leaderboard />} />
-            <Route path="/seva" element={<Seva />} />
-            <Route path="/katha" element={<KathaBhajans />} />
-            <Route path="/katha-bhajans" element={<KathaBhajans />} />
-            <Route path="/jap" element={<NaamJap />} />
+
+            <Route
+              path="/quiz"
+              element={
+                <ProtectedRoute>
+                  <Quiz />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/leaderboard"
+              element={
+                <ProtectedRoute>
+                  <Leaderboard />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/seva"
+              element={
+                <ProtectedRoute>
+                  <Seva />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/katha"
+              element={
+                <ProtectedRoute>
+                  <KathaBhajans />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/katha-bhajans"
+              element={
+                <ProtectedRoute>
+                  <KathaBhajans />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/jap"
+              element={
+                <ProtectedRoute>
+                  <NaamJap />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/profile"
+              element={
+                <ProtectedRoute>
+                  <Profile />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/admin"
+              element={
+                <ProtectedRoute>
+                  <AdminDashboard />
+                </ProtectedRoute>
+              }
+            />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </main>

@@ -1,5 +1,6 @@
 import React from "react";
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
 import "./Home.css";
 
 import {
@@ -13,6 +14,18 @@ import {
 } from "lucide-react";
 
 export default function Home() {
+  const { devotee, openAuthModal } = useAuth();
+  const navigate = useNavigate();
+
+  // Helper function to handle navigation with login gate
+  const handleProtectedNavigation = (path) => {
+    if (devotee) {
+      navigate(path);
+    } else {
+      openAuthModal();
+    }
+  };
+
   return (
     <div className="home-page">
       <section className="hero-section">
@@ -26,20 +39,28 @@ export default function Home() {
         </p>
 
         <div className="hero-actions">
-          <Link className="primary-button" to="/quiz">
+          <button
+            type="button"
+            className="primary-button"
+            onClick={() => handleProtectedNavigation("/quiz")}
+          >
             Play Today's Quiz <ArrowRight size={18} />
-          </Link>
+          </button>
 
-          <Link className="secondary-button" to="/seva">
+          <button
+            type="button"
+            className="secondary-button"
+            onClick={() => handleProtectedNavigation("/seva")}
+          >
             <Heart size={18} /> Explore Seva
-          </Link>
+          </button>
         </div>
       </section>
 
       <section className="activities-section">
         <div className="section-heading">
           <span>OUR SPIRITUAL COMMUNITY</span>
-          <h2>Explore Bhakti & Seva</h2>
+          <h2>Explore Bhakti &amp; Seva</h2>
           <p>Learn, participate and grow in devotion.</p>
         </div>
 
@@ -53,19 +74,31 @@ export default function Home() {
               Test your knowledge of devotional stories and follow your quiz
               progress.
             </p>
-            <Link to="/quiz">Explore Quiz →</Link>
+            <button
+              type="button"
+              className="card-link-button"
+              onClick={() => handleProtectedNavigation("/quiz")}
+            >
+              Explore Quiz →
+            </button>
           </article>
 
           <article className="activity-card">
             <div className="activity-icon">
               <BookOpen size={30} />
             </div>
-            <h3>Katha & Bhajans</h3>
+            <h3>Katha &amp; Bhajans</h3>
             <p>
               Discover spiritual notes, devotional songs and stories from
               Sanatan Dharma.
             </p>
-            <Link to="/katha-bhajans">Explore Katha →</Link>
+            <button
+              type="button"
+              className="card-link-button"
+              onClick={() => handleProtectedNavigation("/katha")}
+            >
+              Explore Katha →
+            </button>
           </article>
 
           <article className="activity-card">
@@ -77,7 +110,13 @@ export default function Home() {
               Learn about community service, devotional activities and upcoming
               events.
             </p>
-            <Link to="/seva">Explore Seva →</Link>
+            <button
+              type="button"
+              className="card-link-button"
+              onClick={() => handleProtectedNavigation("/seva")}
+            >
+              Explore Seva →
+            </button>
           </article>
         </div>
       </section>

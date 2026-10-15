@@ -1,0 +1,193 @@
+.admin-page {
+  min-height: calc(100vh - 72px);
+  background-color: #fffaf5;
+  padding: 36px 20px 60px;
+  color: #4a0e17;
+}
+
+.admin-container {
+  max-width: 1040px;
+  margin: 0 auto;
+}
+
+.admin-header {
+  text-align: center;
+  margin-bottom: 28px;
+}
+
+.admin-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(184, 91, 0, 0.1);
+  color: #b85b00;
+  border: 1px solid rgba(184, 91, 0, 0.25);
+  padding: 4px 14px;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 1px;
+  margin-bottom: 10px;
+}
+
+.admin-header h1 {
+  font-family: Georgia, serif;
+  font-size: 2rem;
+  color: #4a0e17;
+  margin: 0 0 6px;
+}
+
+.admin-header p {
+  color: #766367;
+  font-size: 0.95rem;
+  margin: 0 0 20px;
+}
+
+.admin-tabs {
+  display: inline-flex;
+  gap: 8px;
+  background: #ffffff;
+  padding: 4px;
+  border-radius: 999px;
+  border: 1px solid #ebd9c5;
+}
+
+.admin-tabs button {
+  background: transparent;
+  border: none;
+  padding: 8px 20px;
+  border-radius: 999px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #766367;
+  cursor: pointer;
+}
+
+.admin-tabs button.active {
+  background: #4a0e17;
+  color: #ffd700;
+}
+
+.admin-metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.admin-stat-card {
+  background: #ffffff;
+  border: 1px solid #ebd9c5;
+  border-radius: 14px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.admin-stat-card span {
+  font-size: 0.78rem;
+  color: #766367;
+  font-weight: 600;
+}
+
+.admin-stat-card strong {
+  font-size: 1.5rem;
+  font-family: Georgia, serif;
+  color: #4a0e17;
+}
+
+.admin-table-card,
+.form-card {
+  background: #ffffff;
+  border: 1px solid #ebd9c5;
+  border-radius: 16px;
+  padding: 24px;
+  box-shadow: 0 4px 16px rgba(74, 14, 23, 0.04);
+}
+
+.admin-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 14px;
+  font-size: 0.9rem;
+}
+
+.admin-table th,
+.admin-table td {
+  padding: 10px 12px;
+  text-align: left;
+  border-bottom: 1px solid #f5e9dc;
+}
+
+.role-tag {
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 0.72rem;
+  font-weight: 700;
+}
+
+.role-tag.admin {
+  background: #fee2e2;
+  color: #b91c1c;
+}
+
+.role-tag.devotee {
+  background: #f0fdf4;
+  color: #15803d;
+}
+
+.form-group {
+  margin-bottom: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.form-group input,
+.form-group select {
+  padding: 10px 14px;
+  border-radius: 8px;
+  border: 1px solid #ebd9c5;
+  font-size: 0.92rem;
+}
+
+.options-input-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.admin-submit-btn {
+  background: #4a0e17;
+  color: #ffd700;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-weight: 700;
+  cursor: pointer;
+  margin-top: 10px;
+}
+
+.status-banner {
+  background: #fdf5e9;
+  border: 1px solid #ebd9c5;
+  padding: 10px;
+  border-radius: 8px;
+  margin-bottom: 14px;
+  font-weight: 600;
+}
+
+.admin-access-denied {
+  text-align: center;
+  padding: 80px 20px;
+}
+
+@media (max-width: 768px) {
+  .admin-metrics-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+  .options-input-grid {
+    grid-template-columns: 1fr;
+  }
+}

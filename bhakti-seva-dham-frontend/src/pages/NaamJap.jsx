@@ -1,5 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
+import { japAPI } from "../api/api";
+import { useAuth } from "../context/AuthContext";
 import {
   Sparkles,
   RotateCcw,
@@ -13,8 +15,9 @@ import {
 import "./NaamJap.css";
 
 export default function NaamJap() {
+  const { devotee } = useAuth();
   const [userName, setUserName] = useState(() => {
-    return localStorage.getItem("bhakti_devotee_name") || "";
+    return devotee?.name || localStorage.getItem("bhakti_devotee_name") || "";
   });
   const [beadCount, setBeadCount] = useState(0); // 0 to 108
   const [completedMalas, setCompletedMalas] = useState(0);
@@ -26,34 +29,35 @@ export default function NaamJap() {
   const [isPressing, setIsPressing] = useState(false);
   const audioCtxRef = useRef(null);
 
-  // Sync devotee points to leaderboard whenever a mala completes
+  // Sync state whenever login/logout happens
+  useEffect(() => {
+    if (devotee?.name) {
+      setUserName(devotee.name);
+      setLifetimeJap(Number(devotee.lifetimeJap) || 0);
+      setCompletedMalas(Number(devotee.completedMalas) || 0);
+      setBeadCount(0);
+    } else {
+      setUserName("");
+      setLifetimeJap(0);
+      setCompletedMalas(0);
+      setBeadCount(0);
+    }
+  }, [devotee]);
+
+  // Sync count securely to MongoDB backend using token
+  const syncWithBackend = async (malas, lifetime) => {
+    try {
+      await japAPI.syncSadhana(malas, lifetime);
+    } catch (err) {
+      console.error("Backend sadhana sync failed:", err);
+    }
+  };
+
+  // Keep local storage in sync for session backup
   useEffect(() => {
     if (!userName.trim()) return;
-
     localStorage.setItem("bhakti_devotee_name", userName.trim());
     localStorage.setItem("jap_lifetime_count", lifetimeJap);
-
-    // Each completed Mala awards 10 Points
-    const earnedPoints = completedMalas * 10;
-    const existingLeaderboard = JSON.parse(
-      localStorage.getItem("jap_leaderboard") || "[]",
-    );
-    const userIndex = existingLeaderboard.findIndex(
-      (item) =>
-        item.name && item.name.toLowerCase() === userName.trim().toLowerCase(),
-    );
-
-    if (userIndex !== -1) {
-      existingLeaderboard[userIndex].score = earnedPoints;
-    } else if (earnedPoints > 0) {
-      existingLeaderboard.push({ name: userName.trim(), score: earnedPoints });
-    }
-
-    existingLeaderboard.sort((a, b) => b.score - a.score);
-    localStorage.setItem(
-      "jap_leaderboard",
-      JSON.stringify(existingLeaderboard),
-    );
   }, [completedMalas, lifetimeJap, userName]);
 
   // Pure Web Audio tone generation
@@ -109,12 +113,16 @@ export default function NaamJap() {
     setTimeout(() => setIsPressing(false), 140);
 
     const nextBead = beadCount + 1;
-    setLifetimeJap((prev) => prev + 1);
+    const nextLifetime = lifetimeJap + 1;
+    setLifetimeJap(nextLifetime);
 
     if (nextBead >= 108) {
+      const nextMalas = completedMalas + 1;
       setBeadCount(0);
-      setCompletedMalas((prev) => prev + 1);
+      setCompletedMalas(nextMalas);
       playChantTone(true);
+      // Auto-sync completed Mala securely to backend
+      syncWithBackend(nextMalas, nextLifetime);
     } else {
       setBeadCount(nextBead);
       playChantTone(false);
@@ -126,9 +134,12 @@ export default function NaamJap() {
       setBeadCount((prev) => prev - 1);
       setLifetimeJap((prev) => Math.max(0, prev - 1));
     } else if (completedMalas > 0) {
-      setCompletedMalas((prev) => prev - 1);
+      const updatedMalas = completedMalas - 1;
+      const updatedLifetime = Math.max(0, lifetimeJap - 1);
+      setCompletedMalas(updatedMalas);
       setBeadCount(107);
-      setLifetimeJap((prev) => Math.max(0, prev - 1));
+      setLifetimeJap(updatedLifetime);
+      syncWithBackend(updatedMalas, updatedLifetime);
     }
   };
 
@@ -143,7 +154,6 @@ export default function NaamJap() {
     }
   };
 
-  // SVG Progress calculation (Radius = 110, circumference = 2 * PI * 110 ≈ 691.15)
   const radius = 110;
   const circumference = 2 * Math.PI * radius;
   const strokeDashoffset = circumference - (beadCount / 108) * circumference;
@@ -169,12 +179,9 @@ export default function NaamJap() {
           <div className="jap-devotee-strip">
             <div className="jap-devotee-field">
               <User size={16} />
-              <input
-                type="text"
-                value={userName}
-                onChange={(e) => setUserName(e.target.value)}
-                placeholder="Devotee Name darj karein..."
-              />
+              <span className="jap-logged-name">
+                {userName || devotee?.name || "Devotee"}
+              </span>
             </div>
 
             <div className="jap-quick-actions">
@@ -295,7 +302,11 @@ export default function NaamJap() {
               <span>Undo Last</span>
             </button>
 
-            <Link to="/leaderboard" className="jap-footer-btn lb-btn">
+            <Link
+              to="/leaderboard"
+              onClick={() => syncWithBackend(completedMalas, lifetimeJap)}
+              className="jap-footer-btn lb-btn"
+            >
               <Award size={16} />
               <span>View Leaderboard</span>
             </Link>

@@ -1,12 +1,27 @@
 import React, { useState } from "react";
-import { NavLink, Link } from "react-router-dom";
-import { Menu, X } from "lucide-react";
+import { NavLink, Link, useNavigate } from "react-router-dom";
+import { Menu, X, LogIn, LogOut, User, ShieldCheck } from "lucide-react";
+import { useAuth } from "../context/AuthContext";
 import "./Navbar.css";
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
+  const { devotee, logoutDevotee, openAuthModal } = useAuth();
+  const navigate = useNavigate();
 
   const closeMenu = () => setIsOpen(false);
+
+  const handleLogout = () => {
+    logoutDevotee();
+    closeMenu();
+    navigate("/");
+  };
+
+  const devoteeInitial = devotee?.name
+    ? devotee.name.trim().charAt(0).toUpperCase()
+    : "🙏";
+
+  const isAdmin = devotee?.role === "admin";
 
   return (
     <nav className="site-navbar">
@@ -41,50 +56,131 @@ export default function Navbar() {
             Home
           </NavLink>
 
-          <NavLink
-            to="/quiz"
-            className={({ isActive }) =>
-              `site-nav-link ${isActive ? "nav-active" : ""}`
-            }
-          >
-            Daily Quiz
-          </NavLink>
+          {/* Regular Devotee View Links */}
+          {Boolean(devotee) && !isAdmin && (
+            <>
+              <NavLink
+                to="/quiz"
+                className={({ isActive }) =>
+                  `site-nav-link ${isActive ? "nav-active" : ""}`
+                }
+              >
+                Daily Quiz
+              </NavLink>
 
-          <NavLink
-            to="/leaderboard"
-            className={({ isActive }) =>
-              `site-nav-link ${isActive ? "nav-active" : ""}`
-            }
-          >
-            Leaderboard
-          </NavLink>
+              <NavLink
+                to="/leaderboard"
+                className={({ isActive }) =>
+                  `site-nav-link ${isActive ? "nav-active" : ""}`
+                }
+              >
+                Leaderboard
+              </NavLink>
 
-          <NavLink
-            to="/katha"
-            className={({ isActive }) =>
-              `site-nav-link ${isActive ? "nav-active" : ""}`
-            }
-          >
-            Katha &amp; Bhajans
-          </NavLink>
+              <NavLink
+                to="/katha"
+                className={({ isActive }) =>
+                  `site-nav-link ${isActive ? "nav-active" : ""}`
+                }
+              >
+                Katha &amp; Bhajans
+              </NavLink>
 
-          <NavLink
-            to="/jap"
-            className={({ isActive }) =>
-              `nav-jap-badge ${isActive ? "jap-active" : ""}`
-            }
-          >
-            <span>📿 Naam Jap</span>
-          </NavLink>
+              <NavLink
+                to="/jap"
+                className={({ isActive }) =>
+                  `site-nav-link ${isActive ? "nav-active" : ""}`
+                }
+              >
+                Naam Jap
+              </NavLink>
 
-          <NavLink
-            to="/seva"
-            className={({ isActive }) =>
-              `site-nav-link ${isActive ? "nav-active" : ""}`
-            }
-          >
-            Voluntary Seva
-          </NavLink>
+              <NavLink
+                to="/seva"
+                className={({ isActive }) =>
+                  `site-nav-link ${isActive ? "nav-active" : ""}`
+                }
+              >
+                Voluntary Seva
+              </NavLink>
+            </>
+          )}
+
+          {/* Admin Specific Links */}
+          {Boolean(devotee) && isAdmin && (
+            <>
+              <NavLink
+                to="/admin"
+                className={({ isActive }) =>
+                  `site-nav-link ${isActive ? "nav-active" : ""}`
+                }
+              >
+                <ShieldCheck size={15} />
+                <span>Admin Panel</span>
+              </NavLink>
+
+              <NavLink
+                to="/leaderboard"
+                className={({ isActive }) =>
+                  `site-nav-link ${isActive ? "nav-active" : ""}`
+                }
+              >
+                Leaderboard
+              </NavLink>
+            </>
+          )}
+
+          {/* Common Profile Link for Logged-In Users */}
+          {Boolean(devotee) && (
+            <NavLink
+              to="/profile"
+              className={({ isActive }) =>
+                `site-nav-link profile-nav-tab ${isActive ? "nav-active" : ""}`
+              }
+            >
+              <User size={14} />
+              <span>Profile</span>
+            </NavLink>
+          )}
+
+          {/* Desktop Auth Controls */}
+          <div className="nav-auth-wrapper">
+            {devotee ? (
+              <div className="nav-devotee-badge">
+                <Link
+                  to="/profile"
+                  className="devotee-clean-pill"
+                  title="Devotee Profile Dekhein"
+                >
+                  <span className="devotee-avatar-circle">
+                    {devoteeInitial}
+                  </span>
+                  <span className="devotee-clean-name">
+                    {devotee?.name || "Devotee"}
+                  </span>
+                </Link>
+
+                <button
+                  type="button"
+                  onClick={handleLogout}
+                  className="nav-logout-btn"
+                  title="Logout"
+                >
+                  <LogOut size={13} />
+                  <span>Logout</span>
+                </button>
+              </div>
+            ) : (
+              <button
+                type="button"
+                onClick={openAuthModal}
+                className="nav-login-btn"
+              >
+                <LogIn size={15} />
+                <span>Login / Register</span>
+              </button>
+            )}
+          </div>
         </div>
 
         {/* Mobile Hamburger Toggle */}
@@ -104,25 +200,99 @@ export default function Navbar() {
           <NavLink to="/" end onClick={closeMenu} className="drawer-link">
             Home
           </NavLink>
-          <NavLink to="/quiz" onClick={closeMenu} className="drawer-link">
-            Daily Quiz
-          </NavLink>
-          <NavLink
-            to="/leaderboard"
-            onClick={closeMenu}
-            className="drawer-link"
-          >
-            Leaderboard
-          </NavLink>
-          <NavLink to="/katha" onClick={closeMenu} className="drawer-link">
-            Katha &amp; Bhajans
-          </NavLink>
-          <NavLink to="/jap" onClick={closeMenu} className="drawer-link-jap">
-            📿 Naam Jap Counter
-          </NavLink>
-          <NavLink to="/seva" onClick={closeMenu} className="drawer-link">
-            Voluntary Seva
-          </NavLink>
+
+          {/* Regular Devotee Mobile Links */}
+          {Boolean(devotee) && !isAdmin && (
+            <>
+              <NavLink
+                to="/profile"
+                onClick={closeMenu}
+                className="drawer-link"
+              >
+                👤 My Profile
+              </NavLink>
+              <NavLink to="/quiz" onClick={closeMenu} className="drawer-link">
+                Daily Quiz
+              </NavLink>
+              <NavLink
+                to="/leaderboard"
+                onClick={closeMenu}
+                className="drawer-link"
+              >
+                Leaderboard
+              </NavLink>
+              <NavLink to="/katha" onClick={closeMenu} className="drawer-link">
+                Katha &amp; Bhajans
+              </NavLink>
+              <NavLink to="/jap" onClick={closeMenu} className="drawer-link">
+                Naam Jap
+              </NavLink>
+              <NavLink to="/seva" onClick={closeMenu} className="drawer-link">
+                Voluntary Seva
+              </NavLink>
+            </>
+          )}
+
+          {/* Admin Mobile Links */}
+          {Boolean(devotee) && isAdmin && (
+            <>
+              <NavLink to="/admin" onClick={closeMenu} className="drawer-link">
+                🛡️ Admin Panel
+              </NavLink>
+              <NavLink
+                to="/leaderboard"
+                onClick={closeMenu}
+                className="drawer-link"
+              >
+                Leaderboard
+              </NavLink>
+              <NavLink
+                to="/profile"
+                onClick={closeMenu}
+                className="drawer-link"
+              >
+                👤 My Profile
+              </NavLink>
+            </>
+          )}
+
+          <div className="drawer-auth-row">
+            {devotee ? (
+              <div className="drawer-logged-user">
+                <Link
+                  to="/profile"
+                  onClick={closeMenu}
+                  className="drawer-user-info"
+                  style={{ textDecoration: "none" }}
+                >
+                  <span className="devotee-avatar-circle">
+                    {devoteeInitial}
+                  </span>
+                  <span>{devotee?.name || "Devotee"}</span>
+                </Link>
+                <button
+                  type="button"
+                  onClick={handleLogout}
+                  className="drawer-logout-btn"
+                >
+                  <LogOut size={14} />
+                  <span>Logout</span>
+                </button>
+              </div>
+            ) : (
+              <button
+                type="button"
+                onClick={() => {
+                  closeMenu();
+                  openAuthModal();
+                }}
+                className="drawer-login-btn"
+              >
+                <LogIn size={16} />
+                <span>Login / Register</span>
+              </button>
+            )}
+          </div>
         </div>
       )}
     </nav>
