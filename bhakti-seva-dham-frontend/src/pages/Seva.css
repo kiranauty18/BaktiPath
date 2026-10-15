@@ -1,546 +1,356 @@
-
-@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
-
 /* ==========================================
-   BHAKTI SEVA DHAM
-   PREMIUM SEVA PAGE
+   BHAKTI SEVA DHAM - SIMPLE VOLUNTARY SEVA
 ========================================== */
 
 :root {
-  --bg-cream: #fffbf5;
-  --bg-glow: #f8e7c7;
-  --surface-white: #ffffff;
-
-  --primary-maroon: #762c3a;
-  --primary-maroon-dark: #4e1927;
-  --primary-maroon-light: #994556;
-
-  --gold-accent: #bd8737;
-  --gold-light: #fff4df;
-  --gold-border: #e5c88f;
-
-  --text-heading: #351720;
-  --text-body: #705c58;
-  --text-muted: #948078;
-
-  --border-subtle: #eee0d1;
-  --success-green: #246443;
-  --success-bg: #eef8f1;
-
-  --font-serif: "Cormorant Garamond", Georgia, serif;
-  --font-sans: "Plus Jakarta Sans", sans-serif;
-
-  --shadow-card:
-    0 24px 65px -25px rgba(84, 25, 39, 0.18),
-    0 5px 20px rgba(118, 44, 58, 0.045);
-
-  --shadow-button: 0 9px 22px rgba(118, 44, 58, 0.24);
-  --transition-smooth: 250ms cubic-bezier(0.2, 0.7, 0.2, 1);
-}
-
-/* ==========================================
-   PAGE BACKGROUND
-========================================== */
-
-.seva-page,
-.seva-page * {
-  box-sizing: border-box;
+  --sv-burgundy: #501629;
+  --sv-burgundy-light: #7b263f;
+  --sv-gold: #c6a15b;
+  --sv-gold-light: #fff2d1;
+  --sv-gold-border: #e6cb94;
+  --sv-cream: #fffaf2;
+  --sv-paper: #ffffff;
+  --sv-text: #3c242c;
+  --sv-muted: #7d676f;
+  --sv-border: #ebdcd0;
+  --sv-shadow: 0 16px 40px rgba(80, 22, 41, 0.07);
 }
 
 .seva-page {
   position: relative;
   isolation: isolate;
-  min-height: 100vh;
-  padding: 76px 20px 70px;
-  overflow: hidden;
+  z-index: 1;
+  min-height: calc(100vh - 72px);
+  padding: 26px 20px 36px;
   background:
     radial-gradient(
-      ellipse at 50% 0%,
-      rgba(248, 220, 167, 0.52),
-      transparent 43%
+      circle at 10% 12%,
+      rgba(198, 161, 91, 0.12),
+      transparent 360px
     ),
     radial-gradient(
-      circle at 0% 45%,
-      rgba(220, 184, 147, 0.13),
-      transparent 32%
+      circle at 90% 88%,
+      rgba(123, 38, 63, 0.08),
+      transparent 360px
     ),
-    var(--bg-cream);
-  color: var(--text-heading);
-  font-family: var(--font-sans);
-  -webkit-font-smoothing: antialiased;
+    linear-gradient(140deg, #fffcf7 0%, #fdf5eb 50%, #fff8f0 100%);
+  color: var(--sv-text);
+  font-family:
+    -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
 }
 
-.seva-page button,
-.seva-page input {
-  font: inherit;
+.seva-container {
+  width: 100%;
+  max-width: 560px;
+  margin: 0 auto;
 }
 
-.seva-page button {
-  -webkit-tap-highlight-color: transparent;
-}
-
-.seva-page button:focus-visible,
-.seva-page input:focus-visible {
-  outline: 3px solid var(--gold-accent);
-  outline-offset: 4px;
-}
-
-/* ==========================================
-   HEADER
-========================================== */
-
+/* Header */
 .seva-header {
-  position: relative;
-  z-index: 1;
-  max-width: 680px;
-  margin: 0 auto 42px;
   text-align: center;
+  margin-bottom: 20px;
 }
 
 .seva-badge {
   display: inline-flex;
   align-items: center;
-  justify-content: center;
-  gap: 9px;
-  padding: 10px 18px;
-  border: 1px solid var(--gold-border);
+  gap: 8px;
+  padding: 6px 16px;
   border-radius: 999px;
-  background: linear-gradient(135deg, #fffaf0, #fff0d5);
-  color: #86531f;
-  font: 700 10px/1.4 var(--font-sans);
-  letter-spacing: 1.5px;
+  border: 1px solid var(--sv-gold-border);
+  background: linear-gradient(135deg, #fff9ee, #fcedd4);
+  color: var(--sv-burgundy);
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 1.3px;
   text-transform: uppercase;
-  box-shadow: 0 5px 18px rgba(189, 135, 55, 0.09);
 }
 
 .seva-header h1 {
-  margin: 22px 0 13px;
-  color: var(--text-heading);
-  font-family: var(--font-serif);
-  font-size: clamp(43px, 6vw, 66px);
+  margin: 10px 0 6px;
+  color: var(--sv-burgundy);
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(28px, 4vw, 36px);
   font-weight: 700;
-  line-height: 1.02;
-  letter-spacing: -0.5px;
-  text-wrap: balance;
 }
 
 .seva-header p {
-  max-width: 550px;
+  color: var(--sv-muted);
+  font-size: 13.5px;
+  max-width: 480px;
   margin: 0 auto;
-  color: var(--text-body);
-  font: 400 14px/1.95 var(--font-sans);
 }
 
-/* ==========================================
-   MAIN SEVA CARD
-========================================== */
-
+/* Card */
 .seva-card {
   position: relative;
-  z-index: 1;
-  max-width: 530px;
-  margin: 0 auto;
-  padding: 42px 38px 30px;
-  overflow: hidden;
-  border: 1px solid rgba(229, 200, 143, 0.65);
-  border-radius: 26px;
-  background: rgba(255, 255, 255, 0.96);
-  box-shadow: var(--shadow-card);
-  backdrop-filter: blur(10px);
-  transition: border-color var(--transition-smooth),
-    box-shadow var(--transition-smooth);
+  padding: 28px 32px 24px;
+  background: var(--sv-paper);
+  border: 1px solid var(--sv-border);
+  border-top: 4px solid var(--sv-gold);
+  border-radius: 22px;
+  box-shadow: var(--sv-shadow);
 }
 
-.seva-card::before {
-  position: absolute;
-  top: 0;
-  right: 0;
-  left: 0;
-  height: 4px;
-  background: linear-gradient(
-    90deg,
-    #d9b56b,
-    var(--primary-maroon),
-    #e6c986
-  );
-  content: "";
+.seva-card-icon-header {
+  text-align: center;
+  margin-bottom: 20px;
 }
 
-.seva-card::after {
-  position: absolute;
-  top: -95px;
-  right: -95px;
-  width: 180px;
-  height: 180px;
-  border: 1px solid rgba(189, 135, 55, 0.10);
-  border-radius: 50%;
-  box-shadow:
-    0 0 0 18px rgba(189, 135, 55, 0.025),
-    0 0 0 38px rgba(189, 135, 55, 0.02);
-  content: "";
-  pointer-events: none;
-}
-
-.seva-icon {
-  position: relative;
-  z-index: 1;
+.seva-top-icon {
   display: grid;
   place-items: center;
-  width: 76px;
-  height: 76px;
-  margin: 0 auto 21px;
-  border: 1px solid #e9cc93;
+  width: 52px;
+  height: 52px;
+  margin: 0 auto 12px;
   border-radius: 50%;
-  background: radial-gradient(
-    circle at 35% 25%,
-    #fffdf5,
-    #f7e3b8
-  );
-  color: var(--gold-accent);
-  box-shadow:
-    0 9px 24px rgba(189, 135, 55, 0.15),
-    inset 0 1px 3px rgba(255, 255, 255, 0.9);
-  transition: transform var(--transition-smooth);
+  background: #fbf2e3;
+  color: var(--sv-gold);
+  border: 1px solid #ebd4a8;
 }
 
-.seva-card:hover .seva-icon {
-  transform: translateY(-3px) scale(1.04);
+.seva-card-icon-header h2 {
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 22px;
+  color: var(--sv-burgundy);
+  margin: 0 0 6px;
 }
 
-.seva-card h2 {
-  position: relative;
-  z-index: 1;
-  margin: 0 0 9px;
-  color: var(--text-heading);
-  font-family: var(--font-serif);
-  font-size: 34px;
-  font-weight: 700;
-  line-height: 1.15;
-  text-align: center;
+.seva-card-icon-header p {
+  font-size: 13px;
+  color: var(--sv-muted);
+  margin: 0;
 }
 
-.seva-description {
-  position: relative;
-  z-index: 1;
-  margin: 0 0 28px;
-  color: var(--text-body);
-  font: 400 13px/1.9 var(--font-sans);
-  text-align: center;
+.seva-field-group {
+  margin-bottom: 18px;
 }
 
-/* ==========================================
-   FORM LAYOUT
-========================================== */
-
-.seva-card form {
-  display: grid;
-  gap: 19px;
-  margin-top: 25px;
-}
-
-.seva-card label,
-.seva-card .amount-label,
-.seva-card label.amount-label {
-  display: block;
-  margin-bottom: -9px;
-  color: var(--text-heading);
-  font: 700 12px/1.6 var(--font-sans);
-  letter-spacing: 0.1px;
-}
-
-.seva-card input {
-  width: 100%;
-  min-width: 0;
-  min-height: 52px;
-  padding: 13px 16px;
-  border: 1px solid var(--border-subtle);
-  border-radius: 12px;
-  background: #fdfbf8;
-  color: var(--text-heading);
-  font: 500 13px/1.5 var(--font-sans);
-  transition: border-color var(--transition-smooth),
-    background var(--transition-smooth),
-    box-shadow var(--transition-smooth);
-}
-
-.seva-card input::placeholder {
-  color: #b3a49a;
-  font-weight: 400;
-}
-
-.seva-card input:hover {
-  border-color: #d8c2a6;
-}
-
-.seva-card input:focus {
-  border-color: var(--primary-maroon-light);
-  outline: none;
-  background: #ffffff;
-  box-shadow: 0 0 0 4px rgba(118, 44, 58, 0.08);
-}
-
-/* ==========================================
-   SEVA AMOUNT OPTIONS
-========================================== */
-
-.amount-options {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 11px;
-}
-
-.amount-options button {
-  position: relative;
-  min-width: 0;
-  min-height: 49px;
-  padding: 9px 8px;
-  border: 1px solid #e6d8c6;
-  border-radius: 12px;
-  background: linear-gradient(145deg, #fffdf9, #fff8ed);
-  color: var(--primary-maroon);
-  font: 700 13px/1.4 var(--font-sans);
-  cursor: pointer;
-  transition: color var(--transition-smooth),
-    background var(--transition-smooth),
-    border-color var(--transition-smooth),
-    box-shadow var(--transition-smooth),
-    transform var(--transition-smooth);
-}
-
-.amount-options button:hover {
-  transform: translateY(-2px);
-  border-color: var(--gold-accent);
-  background: #fff3dc;
-}
-
-.amount-options button:active {
-  transform: translateY(0);
-}
-
-.amount-options button.amount-active {
-  transform: translateY(-1px);
-  border-color: var(--primary-maroon);
-  background: linear-gradient(
-    135deg,
-    var(--primary-maroon-light),
-    var(--primary-maroon-dark)
-  );
-  color: #ffffff;
-  box-shadow: 0 7px 17px rgba(118, 44, 58, 0.20);
-}
-
-.amount-options button:focus-visible {
-  outline: 3px solid var(--gold-accent);
-  outline-offset: 3px;
-}
-
-/* ==========================================
-   SUBMIT BUTTON
-========================================== */
-
-.seva-submit {
+.seva-label {
   display: flex;
   align-items: center;
-  justify-content: center;
-  gap: 10px;
+  gap: 8px;
+  color: var(--sv-burgundy);
+  font-size: 13.5px;
+  font-weight: 750;
+  margin-bottom: 8px;
+}
+
+.seva-input {
   width: 100%;
-  min-height: 55px;
-  margin-top: 8px;
-  padding: 13px 18px;
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  border-radius: 13px;
-  background: linear-gradient(
-    115deg,
-    var(--primary-maroon-light),
-    var(--primary-maroon) 55%,
-    var(--primary-maroon-dark)
-  );
-  color: #ffffff;
-  font: 700 13px/1.5 var(--font-sans);
-  letter-spacing: 0.2px;
-  cursor: pointer;
-  box-shadow: var(--shadow-button);
-  transition: transform var(--transition-smooth),
-    box-shadow var(--transition-smooth),
-    filter var(--transition-smooth);
-}
-
-.seva-submit:hover {
-  transform: translateY(-2px);
-  filter: brightness(1.08);
-  box-shadow: 0 13px 28px rgba(118, 44, 58, 0.28);
-}
-
-.seva-submit:active {
-  transform: translateY(0);
-  box-shadow: 0 4px 12px rgba(118, 44, 58, 0.20);
-}
-
-.seva-submit:disabled {
-  opacity: 0.65;
-  cursor: not-allowed;
-  transform: none;
-  box-shadow: none;
-}
-
-/* ==========================================
-   SUCCESS MESSAGE
-========================================== */
-
-.seva-success {
-  padding: 28px 20px;
-  border: 1px solid #c9e3d1;
-  border-radius: 18px;
-  background: linear-gradient(135deg, #f2faf4, #e8f5ec);
-  color: var(--success-green);
-  font-family: var(--font-sans);
-  line-height: 1.85;
-  text-align: center;
-}
-
-.seva-success button {
-  margin-top: 16px;
-  padding: 12px 25px;
-  border: 1px solid #b9d9c4;
-  border-radius: 11px;
+  padding: 12px 16px;
+  border: 1.5px solid var(--sv-border);
+  border-radius: 12px;
+  font-size: 14.5px;
+  color: var(--sv-text);
+  outline: none;
   background: #ffffff;
-  color: var(--success-green);
-  font: 700 12px var(--font-sans);
+  transition:
+    border-color 0.2s,
+    box-shadow 0.2s;
+}
+
+.seva-input:focus {
+  border-color: var(--sv-gold);
+  box-shadow: 0 0 0 3px rgba(198, 161, 91, 0.16);
+}
+
+/* Amount Row */
+.seva-amount-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.seva-amount-chip {
+  flex: 1 1 70px;
+  padding: 11px 14px;
+  border: 1.5px solid var(--sv-border);
+  border-radius: 12px;
+  background: #fbf5ee;
+  color: var(--sv-burgundy);
+  font-size: 14px;
+  font-weight: 750;
   cursor: pointer;
-  transition: background var(--transition-smooth),
-    color var(--transition-smooth),
-    transform var(--transition-smooth);
+  transition: all 0.2s ease;
 }
 
-.seva-success button:hover {
-  transform: translateY(-1px);
-  border-color: var(--success-green);
-  background: var(--success-green);
+.seva-amount-chip:hover {
+  border-color: var(--sv-gold);
+}
+
+.seva-amount-chip.active {
+  background: var(--sv-burgundy);
   color: #ffffff;
+  border-color: var(--sv-burgundy);
+  box-shadow: 0 4px 12px rgba(80, 22, 41, 0.2);
 }
 
-/* ==========================================
-   DISCLAIMER
-========================================== */
-
-.seva-disclaimer {
-  margin-top: 27px;
-  padding-top: 20px;
-  border-top: 1px dashed var(--border-subtle);
-  color: var(--text-muted);
-  font: 400 11px/1.9 var(--font-sans);
+.seva-custom-input {
+  width: 100px;
+  padding: 11px 12px;
+  border: 1.5px solid var(--sv-border);
+  border-radius: 12px;
+  font-size: 13.5px;
+  font-weight: 650;
+  color: var(--sv-text);
+  outline: none;
+  background: #ffffff;
   text-align: center;
 }
 
-/* ==========================================
-   RESPONSIVE: TABLET
-========================================== */
-
-@media (max-width: 768px) {
-  .seva-page {
-    padding: 56px 20px;
-  }
-
-  .seva-header {
-    margin-bottom: 34px;
-  }
-
-  .seva-card {
-    max-width: 510px;
-    padding: 36px 30px 28px;
-  }
+.seva-custom-input.active,
+.seva-custom-input:focus {
+  border-color: var(--sv-burgundy);
+  background: #fffaf4;
 }
 
-/* ==========================================
-   RESPONSIVE: MOBILE
-========================================== */
+/* Submit Button */
+.seva-submit-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  min-height: 48px;
+  margin-top: 8px;
+  padding: 12px 20px;
+  border: none;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #7b263f 0%, #501629 100%);
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 750;
+  cursor: pointer;
+  box-shadow: 0 6px 18px rgba(80, 22, 41, 0.2);
+  transition: all 0.2s ease;
+}
+
+.seva-submit-btn:hover {
+  background: linear-gradient(135deg, #91314d 0%, #631b33 100%);
+  transform: translateY(-1px);
+}
+
+.seva-demo-notice {
+  font-size: 11.5px;
+  color: #a48f97;
+  text-align: center;
+  margin: 12px 0 0;
+}
+
+/* Receipt Plaque */
+.seva-receipt-card {
+  text-align: center;
+  padding: 34px 28px;
+}
+
+.receipt-check-icon {
+  display: grid;
+  place-items: center;
+  width: 66px;
+  height: 66px;
+  margin: 0 auto 16px;
+  border-radius: 50%;
+  background: #eef7f0;
+  color: #2e7d32;
+  border: 1px solid #c8e6c9;
+}
+
+.seva-receipt-card h2 {
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 24px;
+  color: var(--sv-burgundy);
+  margin: 0 0 6px;
+}
+
+.receipt-subtext {
+  font-size: 13.5px;
+  color: var(--sv-muted);
+  margin-bottom: 20px;
+}
+
+.receipt-summary-box {
+  max-width: 380px;
+  margin: 0 auto 22px;
+  padding: 16px 20px;
+  background: #fdf8f2;
+  border: 1px solid var(--sv-border);
+  border-radius: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.receipt-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 13px;
+  color: var(--sv-muted);
+}
+
+.receipt-row strong {
+  color: var(--sv-burgundy);
+}
+
+.receipt-amt {
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 17px;
+  color: #b85b14 !important;
+}
+
+.receipt-status-badge {
+  padding: 3px 10px;
+  border-radius: 999px;
+  background: #e8f5e9;
+  color: #2e7d32;
+  font-size: 11px;
+  font-weight: 750;
+}
+
+.receipt-reset-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 20px;
+  border-radius: 10px;
+  border: 1px solid var(--sv-border);
+  background: #ffffff;
+  color: var(--sv-burgundy);
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.receipt-reset-btn:hover {
+  background: #fdf5ec;
+}
+
+/* Footer Decor */
+.seva-footer-decor {
+  margin-top: 18px;
+  text-align: center;
+  color: #8a737b;
+  font-family: Georgia, "Times New Roman", serif;
+  font-style: italic;
+  font-size: 12.5px;
+}
+
+.seva-footer-decor::before {
+  content: "✦  ✧  ✦";
+  display: block;
+  margin-bottom: 4px;
+  color: var(--sv-gold);
+  font-size: 15px;
+  letter-spacing: 4px;
+}
 
 @media (max-width: 520px) {
   .seva-page {
-    padding: 38px 14px 45px;
+    padding: 18px 12px 30px;
   }
-
-  .seva-header {
-    margin-bottom: 27px;
-  }
-
-  .seva-badge {
-    padding: 8px 12px;
-    font-size: 9px;
-    letter-spacing: 1px;
-  }
-
-  .seva-header h1 {
-    margin-top: 18px;
-    font-size: 39px;
-  }
-
-  .seva-header p {
-    font-size: 12px;
-    line-height: 1.85;
-  }
-
   .seva-card {
-    padding: 30px 20px 23px;
-    border-radius: 21px;
-  }
-
-  .seva-icon {
-    width: 66px;
-    height: 66px;
-    margin-bottom: 18px;
-  }
-
-  .seva-card h2 {
-    font-size: 30px;
-  }
-
-  .seva-description {
-    margin-bottom: 23px;
-    font-size: 12px;
-  }
-
-  .seva-card form {
-    gap: 17px;
-  }
-
-  .seva-card input {
-    min-height: 49px;
-    padding: 12px 13px;
-    font-size: 12px;
-  }
-
-  .amount-options {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 9px;
-  }
-
-  .amount-options button {
-    min-height: 47px;
-    font-size: 12px;
-  }
-
-  .seva-submit {
-    min-height: 51px;
-    font-size: 12px;
-  }
-
-  .seva-disclaimer {
-    font-size: 10px;
-  }
-}
-
-/* ==========================================
-   REDUCED MOTION ACCESSIBILITY
-========================================== */
-
-@media (prefers-reduced-motion: reduce) {
-  .seva-page *,
-  .seva-page *::before,
-  .seva-page *::after {
-    scroll-behavior: auto !important;
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
+    padding: 20px 16px;
   }
 }

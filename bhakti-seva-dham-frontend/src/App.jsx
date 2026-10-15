@@ -11,9 +11,16 @@ import NaamJap from "./pages/NaamJap";
 function NotFound() {
   return (
     <main className="not-found-page py-20 text-center space-y-4">
-      <h1 className="text-3xl font-bold text-spiritual-darkMaroon">Page not found</h1>
-      <p className="text-gray-600">The page you are looking for does not exist.</p>
-      <Link to="/" className="inline-block bg-spiritual-saffron text-white px-6 py-2.5 rounded-full font-semibold shadow">
+      <h1 className="text-3xl font-bold text-spiritual-darkMaroon">
+        Page not found
+      </h1>
+      <p className="text-gray-600">
+        The page you are looking for does not exist.
+      </p>
+      <Link
+        to="/"
+        className="inline-block bg-spiritual-saffron text-white px-6 py-2.5 rounded-full font-semibold shadow"
+      >
         Return to Home
       </Link>
     </main>
@@ -22,26 +29,54 @@ function NotFound() {
 
 function Footer() {
   return (
-    <footer className="app-footer bg-spiritual-darkMaroon text-spiritual-cream py-8 px-4 text-center border-t border-spiritual-golden/30">
-      <div className="app-footer-brand flex justify-center items-center space-x-2 mb-2">
-        <span className="app-footer-om w-8 h-8 rounded-full bg-spiritual-saffron flex items-center justify-center text-white font-bold text-sm">ॐ</span>
-        <strong>Bhakti Seva Dham</strong>
+    <footer className="w-full bg-[#4A0E17] text-[#FFF8ED] py-10 px-4 border-t border-[#D4AF37]/30">
+      <div className="max-w-4xl mx-auto flex flex-col items-center justify-center text-center space-y-4">
+        {/* Brand & Symbol */}
+        <div className="flex items-center justify-center gap-2.5">
+          <span className="w-9 h-9 rounded-full bg-[#FF8C00] flex items-center justify-center text-white font-bold text-base shadow-sm">
+            ॐ
+          </span>
+          <strong className="text-lg font-serif tracking-wider text-white">
+            Bhakti Seva Dham
+          </strong>
+        </div>
+
+        {/* Subtitle / Description */}
+        <p className="text-xs text-[#EADDE0] max-w-lg leading-relaxed mx-auto">
+          A place for devotion, spiritual learning, and selfless service. Shri
+          Radha Raman &amp; Banke Bihari Seva.
+        </p>
+
+        {/* Nav Links */}
+        <nav
+          className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-xs font-medium text-[#F4E08B] pt-1"
+          aria-label="Footer navigation"
+        >
+          <Link to="/" className="hover:text-white transition">
+            Home
+          </Link>
+          <Link to="/quiz" className="hover:text-white transition">
+            Daily Quiz
+          </Link>
+          <Link to="/leaderboard" className="hover:text-white transition">
+            Leaderboard
+          </Link>
+          <Link to="/katha" className="hover:text-white transition">
+            Katha &amp; Bhajans
+          </Link>
+          <Link to="/jap" className="hover:text-white transition">
+            📿 Naam Jap
+          </Link>
+          <Link to="/seva" className="hover:text-white transition">
+            Voluntary Seva
+          </Link>
+        </nav>
+
+        {/* Copyright */}
+        <small className="block text-[#A8929A] text-[11px] pt-2 border-t border-white/10 w-full max-w-xs mx-auto">
+          © 2026 Bhakti Seva Dham. Designed BY @Ki.ran_.ig
+        </small>
       </div>
-
-      <p className="text-xs text-gray-300 max-w-md mx-auto mb-4">
-        A place for devotion, spiritual learning, and selfless service. Shri Radha Raman &amp; Banke Bihari Seva.
-      </p>
-
-      <nav className="app-footer-links flex flex-wrap justify-center gap-4 text-xs text-spiritual-golden font-medium mb-4" aria-label="Footer navigation">
-        <Link to="/" className="hover:underline">Home</Link>
-        <Link to="/quiz" className="hover:underline">Daily Quiz</Link>
-        <Link to="/leaderboard" className="hover:underline">Leaderboard</Link>
-        <Link to="/seva" className="hover:underline">Voluntary Seva</Link>
-        <Link to="/katha" className="hover:underline">Katha &amp; Bhajans</Link>
-        <Link to="/jap" className="hover:underline">📿 Naam Jap</Link>
-      </nav>
-
-      <small className="text-gray-500 text-xs">© 2026 Bhakti Seva Dham. Designed BY @Ki.ran_.ig</small>
     </footer>
   );
 }

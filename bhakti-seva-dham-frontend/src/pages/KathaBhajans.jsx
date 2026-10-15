@@ -1,4 +1,3 @@
-
 import React, { useMemo, useState } from "react";
 import {
   BookOpen,
@@ -8,7 +7,6 @@ import {
   Sparkles,
   Headphones,
   Heart,
-  Play,
 } from "lucide-react";
 import "./KathaBhajans.css";
 
@@ -82,25 +80,24 @@ export default function KathaBhajans() {
       kathas.filter((item) =>
         `${item.title} ${item.description} ${item.category}`
           .toLowerCase()
-          .includes(search.toLowerCase())
+          .includes(search.toLowerCase()),
       ),
-    [search]
+    [search],
   );
 
   const filteredBhajans = useMemo(
     () =>
       bhajans.filter((item) => {
-        const matchesSearch =
-          `${item.title} ${item.singer} ${item.category}`
-            .toLowerCase()
-            .includes(search.toLowerCase());
+        const matchesSearch = `${item.title} ${item.singer} ${item.category}`
+          .toLowerCase()
+          .includes(search.toLowerCase());
 
         const matchesCategory =
           category === "All" || item.category === category;
 
         return matchesSearch && matchesCategory;
       }),
-    [search, category]
+    [search, category],
   );
 
   function changeTab(tab) {
@@ -110,27 +107,28 @@ export default function KathaBhajans() {
   }
 
   return (
-    <main className="kb-page">
+    <div className="kb-page">
+      {/* Devotional Hero Section Restored */}
       <section className="kb-hero">
         <div className="kb-hero-overlay" />
         <div className="kb-hero-content">
           <span className="kb-eyebrow">
-            <Sparkles size={15} />
-            A place for devotion and wisdom
+            <Sparkles size={14} />A place for devotion and wisdom
           </span>
 
           <h1>
             Katha, Bhajans
             <br />
-            <span>& Stuti</span>
+            <span>&amp; Stuti</span>
           </h1>
 
           <p>
-            Discover sacred stories, devotional music, and moments
-            of peace through the timeless traditions of Sanatan Dharma.
+            Discover sacred stories, devotional music, and moments of peace
+            through the timeless traditions of Sanatan Dharma.
           </p>
 
           <button
+            type="button"
             className="kb-hero-button"
             onClick={() =>
               document
@@ -138,21 +136,22 @@ export default function KathaBhajans() {
                 ?.scrollIntoView({ behavior: "smooth" })
             }
           >
-            Explore the collection
+            <span>Explore the collection</span>
             <ChevronDown size={18} />
           </button>
         </div>
 
         <div className="kb-hero-note">
-          <Heart size={17} />
+          <Heart size={16} />
           <span>Listen with devotion. Read with reflection.</span>
         </div>
       </section>
 
+      {/* Library Section */}
       <section className="kb-library" id="kb-library">
         <div className="kb-section-heading">
           <span className="kb-overline">YOUR DEVOTIONAL LIBRARY</span>
-          <h2>Explore & Experience</h2>
+          <h2>Explore &amp; Experience</h2>
           <p>Choose a katha to read or a bhajan to listen to.</p>
         </div>
 
@@ -164,7 +163,7 @@ export default function KathaBhajans() {
             className={`kb-tab ${activeTab === "katha" ? "active" : ""}`}
             onClick={() => changeTab("katha")}
           >
-            <BookOpen size={19} />
+            <BookOpen size={18} />
             <span>Daily Katha</span>
           </button>
 
@@ -175,18 +174,18 @@ export default function KathaBhajans() {
             className={`kb-tab ${activeTab === "bhajans" ? "active" : ""}`}
             onClick={() => changeTab("bhajans")}
           >
-            <Music2 size={19} />
-            <span>Bhajans & Mantras</span>
+            <Music2 size={18} />
+            <span>Bhajans &amp; Mantras</span>
           </button>
         </div>
 
         <div className="kb-toolbar">
           <label className="kb-search">
-            <Search size={19} />
+            <Search size={18} />
             <input
               type="search"
               value={search}
-              onChange={(event) => setSearch(event.target.value)}
+              onChange={(e) => setSearch(e.target.value)}
               placeholder={
                 activeTab === "katha"
                   ? "Search kathas..."
@@ -202,9 +201,7 @@ export default function KathaBhajans() {
                 <button
                   type="button"
                   key={item}
-                  className={`kb-filter ${
-                    category === item ? "selected" : ""
-                  }`}
+                  className={`kb-filter ${category === item ? "selected" : ""}`}
                   onClick={() => setCategory(item)}
                 >
                   {item}
@@ -229,7 +226,7 @@ export default function KathaBhajans() {
                   </div>
 
                   <div className="kb-card-icon">
-                    <BookOpen size={25} />
+                    <BookOpen size={24} />
                   </div>
 
                   <h3>{item.title}</h3>
@@ -251,9 +248,9 @@ export default function KathaBhajans() {
                         setExpandedKatha(isExpanded ? null : item.id)
                       }
                     >
-                      {isExpanded ? "Read less" : "Read katha"}
+                      <span>{isExpanded ? "Read less" : "Read katha"}</span>
                       <ChevronDown
-                        size={17}
+                        size={16}
                         className={isExpanded ? "kb-chevron-up" : ""}
                       />
                     </button>
@@ -263,9 +260,7 @@ export default function KathaBhajans() {
             })}
 
             {filteredKathas.length === 0 && (
-              <p className="kb-empty">
-                No kathas found. Try another search.
-              </p>
+              <p className="kb-empty">No kathas found. Try another search.</p>
             )}
           </div>
         ) : (
@@ -277,7 +272,7 @@ export default function KathaBhajans() {
                 </div>
 
                 <div className="kb-music-icon">
-                  <Music2 size={23} />
+                  <Music2 size={22} />
                 </div>
 
                 <div className="kb-track-info">
@@ -312,18 +307,12 @@ export default function KathaBhajans() {
           <div>
             <strong>Make time for devotion</strong>
             <p>
-              Return whenever you need a quiet moment for reading,
-              reflection, or prayer.
+              Return whenever you need a quiet moment for reading, reflection,
+              or prayer.
             </p>
           </div>
         </div>
       </section>
-
-      <footer className="kb-footer">
-        <span className="kb-footer-symbol"></span>
-        <p>With श्रद्धा, सेवा, and प्रेम.</p>
-        <span>Bhakti Seva Dham</span>
-      </footer>
-    </main>
+    </div>
   );
 }

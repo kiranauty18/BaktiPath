@@ -1,83 +1,130 @@
-import React, { useState } from 'react';
-import { Menu, X, Heart, Sparkles } from 'lucide-react';
+import React, { useState } from "react";
+import { NavLink, Link } from "react-router-dom";
+import { Menu, X } from "lucide-react";
+import "./Navbar.css";
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
 
+  const closeMenu = () => setIsOpen(false);
+
   return (
-    <nav className="bg-spiritual-cream border-b border-spiritual-golden/30 sticky top-0 z-50 shadow-sm">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between h-20 items-center">
-          
-          {/* Logo & Title */}
-          <div className="flex items-center space-x-3">
-            <a href="/" className="flex items-center space-x-3">
-              <div className="w-12 h-12 rounded-full overflow-hidden border-2 border-spiritual-golden shadow-md bg-spiritual-cream flex items-center justify-center">
-                <img 
-                  src="/images/radhaRaman.png" 
-                  alt="Shri Radha Raman Ji" 
-                  className="w-full h-full object-cover"
-                  onError={(e) => {
-                    e.target.style.display = 'none';
-                  }}
-                />
-              </div>
-              <div>
-                <span className="text-xl sm:text-2xl font-bold text-spiritual-darkMaroon tracking-wide">
-                  Bhakti Seva Dham
-                </span>
-                <p className="text-xs text-spiritual-saffron font-medium">Shri Radha Raman & Banke Bihari Seva</p>
-              </div>
-            </a>
+    <nav className="site-navbar">
+      <div className="site-navbar-container">
+        {/* Logo & Brand */}
+        <Link to="/" className="site-brand" onClick={closeMenu}>
+          <div className="site-brand-icon">
+            <img
+              src="/images/radhaRaman.png"
+              alt="Shri Radha Raman Ji"
+              onError={(e) => {
+                e.currentTarget.style.display = "none";
+              }}
+            />
+            <span className="brand-fallback-om">ॐ</span>
           </div>
-
-          {/* Desktop Menu */}
-          <div className="hidden md:flex items-center space-x-6 text-spiritual-darkMaroon font-medium text-sm">
-            <a href="/" className="hover:text-spiritual-saffron transition">Home</a>
-            <a href="/quiz" className="hover:text-spiritual-saffron transition">Daily Quiz</a>
-            <a href="/leaderboard" className="hover:text-spiritual-saffron transition">Leaderboard</a>
-            <a href="/katha" className="hover:text-spiritual-saffron transition">Katha & Bhajans</a>
-            
-            {/* Naam Jap Highlighted Link in Navbar */}
-            <a 
-              href="/jap" 
-              className="bg-spiritual-saffron/10 hover:bg-spiritual-saffron hover:text-white text-spiritual-saffron border border-spiritual-saffron/40 px-3.5 py-2 rounded-full transition flex items-center space-x-1.5 font-semibold shadow-sm"
-            >
-              <span>📿 Naam Jap</span>
-            </a>
-
-            <a href="/seva" className="hover:text-spiritual-saffron transition">Voluntary Seva</a>
+          <div className="site-brand-text">
+            <strong>Bhakti Seva Dham</strong>
+            <small>Shri Radha Raman &amp; Banke Bihari Seva</small>
           </div>
+        </Link>
 
-          {/* Mobile Menu Button */}
-          <div className="md:hidden flex items-center">
-            <button 
-              onClick={() => setIsOpen(!isOpen)}
-              className="text-spiritual-darkMaroon focus:outline-none"
-            >
-              {isOpen ? <X size={28} /> : <Menu size={28} />}
-            </button>
-          </div>
+        {/* Desktop Navigation Links */}
+        <div className="site-nav-links">
+          <NavLink
+            to="/"
+            end
+            className={({ isActive }) =>
+              `site-nav-link ${isActive ? "nav-active" : ""}`
+            }
+          >
+            Home
+          </NavLink>
 
+          <NavLink
+            to="/quiz"
+            className={({ isActive }) =>
+              `site-nav-link ${isActive ? "nav-active" : ""}`
+            }
+          >
+            Daily Quiz
+          </NavLink>
+
+          <NavLink
+            to="/leaderboard"
+            className={({ isActive }) =>
+              `site-nav-link ${isActive ? "nav-active" : ""}`
+            }
+          >
+            Leaderboard
+          </NavLink>
+
+          <NavLink
+            to="/katha"
+            className={({ isActive }) =>
+              `site-nav-link ${isActive ? "nav-active" : ""}`
+            }
+          >
+            Katha &amp; Bhajans
+          </NavLink>
+
+          <NavLink
+            to="/jap"
+            className={({ isActive }) =>
+              `nav-jap-badge ${isActive ? "jap-active" : ""}`
+            }
+          >
+            <span>📿 Naam Jap</span>
+          </NavLink>
+
+          <NavLink
+            to="/seva"
+            className={({ isActive }) =>
+              `site-nav-link ${isActive ? "nav-active" : ""}`
+            }
+          >
+            Voluntary Seva
+          </NavLink>
         </div>
+
+        {/* Mobile Hamburger Toggle */}
+        <button
+          type="button"
+          onClick={() => setIsOpen(!isOpen)}
+          className="nav-menu-toggle"
+          aria-label="Toggle navigation menu"
+        >
+          {isOpen ? <X size={24} /> : <Menu size={24} />}
+        </button>
       </div>
 
       {/* Mobile Drawer */}
       {isOpen && (
-        <div className="md:hidden bg-spiritual-cream border-b border-spiritual-golden/30 px-4 pt-2 pb-6 space-y-3 font-medium">
-          <a href="/" className="block py-2 text-spiritual-darkMaroon border-b border-gray-100">Home</a>
-          <a href="/quiz" className="block py-2 text-spiritual-darkMaroon border-b border-gray-100">Daily Quiz</a>
-          <a href="/leaderboard" className="block py-2 text-spiritual-darkMaroon border-b border-gray-100">Leaderboard</a>
-          <a href="/katha" className="block py-2 text-spiritual-darkMaroon border-b border-gray-100">Katha & Bhajans</a>
-          
-          {/* Mobile Naam Jap Link */}
-          <a href="/jap" className="block py-2.5 px-4 rounded-xl bg-spiritual-saffron text-black font-bold shadow-sm flex items-center space-x-2">
-            <span>📿 Naam Jap Counter</span>
-          </a>
-
-          <a href="/seva" className="block py-2 text-spiritual-darkMaroon border-b border-gray-100">Voluntary Seva</a>
+        <div className="site-nav-drawer">
+          <NavLink to="/" end onClick={closeMenu} className="drawer-link">
+            Home
+          </NavLink>
+          <NavLink to="/quiz" onClick={closeMenu} className="drawer-link">
+            Daily Quiz
+          </NavLink>
+          <NavLink
+            to="/leaderboard"
+            onClick={closeMenu}
+            className="drawer-link"
+          >
+            Leaderboard
+          </NavLink>
+          <NavLink to="/katha" onClick={closeMenu} className="drawer-link">
+            Katha &amp; Bhajans
+          </NavLink>
+          <NavLink to="/jap" onClick={closeMenu} className="drawer-link-jap">
+            📿 Naam Jap Counter
+          </NavLink>
+          <NavLink to="/seva" onClick={closeMenu} className="drawer-link">
+            Voluntary Seva
+          </NavLink>
         </div>
       )}
     </nav>
-  ); 
+  );
 }

@@ -1,86 +1,58 @@
-
-@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@500;600;700;800&display=swap');
-
 /* =========================================
-   BHAKTI SEVA DHAM
-   KATHA & BHAJANS — PREMIUM DEVOTIONAL
+   BHAKTI SEVA DHAM - KATHA & BHAJANS
+   Warm Devotional Theme (Burgundy & Gold)
 ========================================= */
 
 .kb-page {
-  --kb-cream: #f8f6ee;
-  --kb-paper: #fffefa;
-  --kb-saffron: #b78a42;
+  --kb-cream: #fffaf2;
+  --kb-paper: #ffffff;
+  --kb-saffron: #c6a15b;
   --kb-saffron-dark: #8c642b;
-  --kb-maroon: #234b3c;
+  --kb-maroon: #501629;
+  --kb-maroon-dark: #3a0d1c;
   --kb-gold: #d9bd7b;
-  --kb-muted: #77766a;
-  --kb-border: #e8e2d2;
-  --kb-soft-green: #edf3eb;
-  --kb-shadow: 0 12px 35px rgba(35, 75, 60, 0.07);
+  --kb-muted: #7d676f;
+  --kb-border: #ede0d4;
+  --kb-soft-gold: #fdf5e6;
+  --kb-shadow: 0 10px 30px rgba(80, 22, 41, 0.05);
 
+  position: relative;
+  isolation: isolate;
+  z-index: 1;
   min-height: 100vh;
-  overflow: hidden;
   background: var(--kb-cream);
   color: var(--kb-maroon);
-  font-family: "DM Sans", sans-serif;
+  font-family:
+    -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
   line-height: 1.6;
 }
 
-.kb-page *,
-.kb-page *::before,
-.kb-page *::after {
-  box-sizing: border-box;
-}
-
-.kb-page button,
-.kb-page input {
-  font: inherit;
-}
-
-.kb-page button {
-  -webkit-tap-highlight-color: transparent;
-}
-
-.kb-page button:focus-visible,
-.kb-page input:focus-visible {
-  outline: 3px solid var(--kb-gold);
-  outline-offset: 3px;
-}
-
-/* =========================================
-   HERO SECTION
-========================================= */
-
+/* Hero Section with Warm Burgundy-Gold Tint */
 .kb-hero {
   position: relative;
   isolation: isolate;
   display: flex;
   align-items: center;
-  min-height: 530px;
-  padding: 80px max(7%, calc((100% - 1160px) / 2));
-  background-color: #234b3c;
+  min-height: 460px;
+  padding: 65px max(7%, calc((100% - 1160px) / 2));
+  background-color: var(--kb-maroon);
   background-image: url("/images/radhaRaman.png");
   background-size: cover;
-  background-position: center 42%;
+  background-position: right 30%;
   color: #fffdf6;
 }
 
+/* Replaced green overlay with a warm burgundy tint that lets the artwork shine */
 .kb-hero::before {
   position: absolute;
   z-index: -1;
   inset: 0;
-  background:
-    radial-gradient(
-      circle at 75% 45%,
-      rgba(217, 189, 123, 0.12),
-      transparent 35%
-    ),
-    linear-gradient(
-      90deg,
-      rgba(17, 45, 35, 0.94) 0%,
-      rgba(25, 59, 45, 0.84) 48%,
-      rgba(25, 59, 45, 0.30) 100%
-    );
+  background: linear-gradient(
+    90deg,
+    rgba(58, 13, 28, 0.94) 0%,
+    rgba(80, 22, 41, 0.78) 48%,
+    rgba(80, 22, 41, 0.25) 100%
+  );
   content: "";
 }
 
@@ -88,11 +60,7 @@
   position: absolute;
   z-index: -1;
   inset: 0;
-  background: linear-gradient(
-    0deg,
-    rgba(17, 45, 35, 0.25),
-    transparent 45%
-  );
+  background: linear-gradient(0deg, rgba(58, 13, 28, 0.35), transparent 50%);
   pointer-events: none;
 }
 
@@ -103,16 +71,16 @@
 .kb-eyebrow {
   display: inline-flex;
   align-items: center;
-  gap: 10px;
-  margin-bottom: 23px;
-  padding: 10px 16px;
-  border: 1px solid rgba(226, 202, 147, 0.48);
+  gap: 8px;
+  margin-bottom: 18px;
+  padding: 7px 16px;
+  border: 1px solid rgba(226, 202, 147, 0.5);
   border-radius: 999px;
-  background: rgba(255, 255, 255, 0.08);
-  color: #f2d9a2;
+  background: rgba(255, 255, 255, 0.1);
+  color: #f7e4bd;
   font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 1.5px;
+  font-weight: 750;
+  letter-spacing: 1.3px;
   text-transform: uppercase;
   backdrop-filter: blur(8px);
 }
@@ -120,857 +88,389 @@
 .kb-hero h1 {
   margin: 0;
   color: #fffdf6;
-  font-family: "Playfair Display", Georgia, serif;
-  font-size: clamp(44px, 6vw, 76px);
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(38px, 5.2vw, 58px);
   font-weight: 700;
-  line-height: 1.1;
-  letter-spacing: -1.4px;
-  text-wrap: balance;
+  line-height: 1.15;
+  letter-spacing: -0.8px;
 }
 
 .kb-hero h1 span {
-  color: #e7c986;
+  color: #f4d593;
 }
 
 .kb-hero-content > p {
   max-width: 500px;
-  margin: 23px 0 29px;
-  color: #e7e9df;
-  font-size: 15px;
-  line-height: 1.95;
+  margin: 16px 0 24px;
+  color: #f6ebeb;
+  font-size: 14.5px;
+  line-height: 1.8;
 }
 
 .kb-hero-button {
   display: inline-flex;
   align-items: center;
-  justify-content: center;
-  gap: 11px;
-  min-height: 51px;
-  padding: 0 25px;
+  gap: 9px;
+  min-height: 48px;
+  padding: 0 24px;
   border: 1px solid #e6ca8e;
-  border-radius: 10px;
-  background: linear-gradient(135deg, #f0dba9, #d8b66e);
-  color: #234332;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #f5e4bd, #deb76a);
+  color: #4a0e17;
   font-size: 13px;
-  font-weight: 700;
+  font-weight: 750;
   cursor: pointer;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.13);
-  transition: background 0.25s ease, transform 0.25s ease,
-    box-shadow 0.25s ease;
+  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.16);
+  transition: all 0.2s ease;
 }
 
 .kb-hero-button:hover {
-  transform: translateY(-3px);
-  background: #f7e7bd;
-  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.18);
+  transform: translateY(-2px);
+  background: #faeed2;
 }
 
 .kb-hero-note {
   position: absolute;
   right: max(7%, calc((100% - 1160px) / 2));
-  bottom: 26px;
+  bottom: 22px;
   display: flex;
   align-items: center;
-  gap: 10px;
-  color: #f1dfb8;
+  gap: 8px;
+  color: #fcedcf;
   font-size: 12px;
-  letter-spacing: 0.2px;
 }
 
-/* =========================================
-   MAIN LIBRARY
-========================================= */
-
+/* Library Section */
 .kb-library {
-  width: min(1160px, calc(100% - 48px));
+  width: min(1160px, calc(100% - 40px));
   margin: 0 auto;
-  padding: 82px 0 70px;
-  scroll-margin-top: 24px;
+  padding: 48px 0 42px;
 }
 
 .kb-section-heading {
-  max-width: 700px;
-  margin: 0 auto 36px;
+  max-width: 680px;
+  margin: 0 auto 28px;
   text-align: center;
 }
 
 .kb-overline {
-  display: inline-block;
   color: var(--kb-saffron-dark);
   font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 2.5px;
+  font-weight: 800;
+  letter-spacing: 2px;
   text-transform: uppercase;
 }
 
 .kb-section-heading h2 {
-  margin: 12px 0;
+  margin: 8px 0;
   color: var(--kb-maroon);
-  font-family: "Playfair Display", Georgia, serif;
-  font-size: clamp(32px, 4vw, 46px);
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(28px, 3.8vw, 38px);
   font-weight: 700;
-  line-height: 1.2;
-  text-wrap: balance;
 }
 
 .kb-section-heading > p {
-  max-width: 580px;
-  margin: 0 auto;
   color: var(--kb-muted);
   font-size: 14px;
-  line-height: 1.9;
 }
 
-/* =========================================
-   KATHA / BHAJAN TABS
-========================================= */
-
+/* Tabs */
 .kb-tabs {
   display: flex;
   justify-content: center;
-  gap: 7px;
+  gap: 6px;
   width: fit-content;
-  max-width: 100%;
-  margin: 0 auto 30px;
-  padding: 6px;
+  margin: 0 auto 26px;
+  padding: 5px;
   border: 1px solid var(--kb-border);
-  border-radius: 15px;
-  background: #eeeee4;
+  border-radius: 999px;
+  background: #f4eae0;
 }
 
 .kb-tab {
   display: inline-flex;
   align-items: center;
-  justify-content: center;
-  gap: 9px;
-  min-height: 47px;
-  padding: 0 23px;
-  border: 1px solid transparent;
-  border-radius: 10px;
+  gap: 8px;
+  padding: 9px 22px;
+  border: none;
+  border-radius: 999px;
   background: transparent;
-  color: #72766b;
+  color: var(--kb-muted);
   font-size: 13px;
   font-weight: 700;
   cursor: pointer;
-  transition: color 0.2s ease, background 0.2s ease,
-    box-shadow 0.2s ease;
-}
-
-.kb-tab:hover:not(.active) {
-  background: rgba(255, 255, 255, 0.7);
-  color: var(--kb-maroon);
+  transition: all 0.2s ease;
 }
 
 .kb-tab.active {
-  border-color: rgba(255, 255, 255, 0.15);
   background: var(--kb-maroon);
-  color: #fffdf5;
-  box-shadow: 0 5px 15px rgba(35, 75, 60, 0.17);
+  color: #ffffff;
+  box-shadow: 0 4px 12px rgba(80, 22, 41, 0.2);
 }
 
-/* =========================================
-   SEARCH AND FILTERS
-========================================= */
-
+/* Toolbar */
 .kb-toolbar {
   display: flex;
   align-items: center;
   justify-content: space-between;
   flex-wrap: wrap;
-  gap: 16px;
-  margin-bottom: 27px;
+  gap: 14px;
+  margin-bottom: 24px;
 }
 
 .kb-search {
   display: flex;
   align-items: center;
-  gap: 11px;
-  flex: 1 1 250px;
-  max-width: 420px;
-  min-height: 49px;
-  padding: 0 16px;
-  border: 1px solid var(--kb-border);
+  gap: 10px;
+  flex: 1 1 240px;
+  max-width: 380px;
+  padding: 10px 16px;
+  border: 1.5px solid var(--kb-border);
   border-radius: 12px;
   background: var(--kb-paper);
   color: var(--kb-muted);
-  box-shadow: 0 3px 12px rgba(35, 75, 60, 0.025);
-  transition: border-color 0.2s ease, box-shadow 0.2s ease;
-}
-
-.kb-search:focus-within {
-  border-color: var(--kb-saffron);
-  box-shadow: 0 0 0 4px rgba(183, 138, 66, 0.12);
 }
 
 .kb-search input {
   width: 100%;
-  min-width: 0;
-  padding: 12px 0;
-  border: 0;
-  outline: 0;
+  border: none;
+  outline: none;
   background: transparent;
   color: var(--kb-maroon);
-  font-size: 13px;
-}
-
-.kb-search input::placeholder {
-  color: #a09f91;
+  font-size: 13.5px;
 }
 
 .kb-filters {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
+  gap: 6px;
 }
 
 .kb-filter {
-  min-height: 37px;
-  padding: 0 15px;
+  padding: 6px 14px;
   border: 1px solid var(--kb-border);
   border-radius: 999px;
   background: var(--kb-paper);
-  color: #73766a;
-  font-size: 11px;
+  color: var(--kb-muted);
+  font-size: 11.5px;
   font-weight: 700;
   cursor: pointer;
-  transition: color 0.2s ease, background 0.2s ease,
-    border-color 0.2s ease, transform 0.2s ease;
-}
-
-.kb-filter:hover {
-  transform: translateY(-1px);
-  border-color: #cbb27c;
+  transition: all 0.2s ease;
 }
 
 .kb-filter.selected {
-  border-color: var(--kb-maroon);
   background: var(--kb-maroon);
-  color: white;
+  color: #ffffff;
+  border-color: var(--kb-maroon);
 }
 
-/* =========================================
-   KATHA CARDS
-========================================= */
-
+/* Katha Grid */
 .kb-katha-grid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  align-items: stretch;
-  gap: 23px;
+  gap: 20px;
 }
 
 .kb-katha-card {
-  position: relative;
   display: flex;
   flex-direction: column;
-  min-width: 0;
-  min-height: 350px;
-  padding: 26px;
-  overflow: hidden;
+  padding: 24px;
   border: 1px solid var(--kb-border);
   border-radius: 18px;
   background: var(--kb-paper);
-  box-shadow: 0 5px 22px rgba(35, 75, 60, 0.035);
-  transition: transform 0.25s ease, box-shadow 0.25s ease,
-    border-color 0.25s ease;
-}
-
-.kb-katha-card::before {
-  position: absolute;
-  top: 0;
-  right: 0;
-  left: 0;
-  height: 3px;
-  background: linear-gradient(
-    90deg,
-    var(--kb-maroon),
-    var(--kb-gold),
-    #a9b99a
-  );
-  content: "";
-  opacity: 0;
-  transition: opacity 0.25s ease;
+  box-shadow: var(--kb-shadow);
+  transition:
+    transform 0.2s ease,
+    border-color 0.2s ease;
 }
 
 .kb-katha-card:hover {
-  transform: translateY(-5px);
-  border-color: #d9cba9;
-  box-shadow: 0 17px 38px rgba(35, 75, 60, 0.10);
-}
-
-.kb-katha-card:hover::before {
-  opacity: 1;
+  transform: translateY(-2px);
+  border-color: #d8b880;
+  box-shadow: 0 12px 28px rgba(80, 22, 41, 0.08);
 }
 
 .kb-card-top {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 10px;
 }
 
 .kb-number {
-  color: #c9c2ae;
-  font-family: "Playfair Display", Georgia, serif;
-  font-size: 25px;
+  color: #d1b896;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 24px;
   font-weight: 700;
 }
 
 .kb-category {
-  padding: 6px 11px;
-  border: 1px solid #e1e8db;
+  padding: 4px 10px;
   border-radius: 999px;
-  background: var(--kb-soft-green);
-  color: #42644a;
-  font-size: 10px;
-  font-weight: 700;
-}
-
-.kb-card-icon,
-.kb-music-icon {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-  width: 50px;
-  height: 50px;
-  border: 1px solid #e7dfc9;
-  border-radius: 15px;
-  background: linear-gradient(145deg, #f8f4e7, #eee9d8);
+  background: var(--kb-soft-gold);
   color: var(--kb-saffron-dark);
+  font-size: 10px;
+  font-weight: 750;
+  border: 1px solid #edd39e;
 }
 
 .kb-card-icon {
-  margin: 24px 0 17px;
+  display: grid;
+  place-items: center;
+  width: 46px;
+  height: 46px;
+  margin: 16px 0 14px;
+  border-radius: 12px;
+  background: #fbf2e3;
+  color: var(--kb-saffron-dark);
+  border: 1px solid #ebd4a8;
 }
 
-.kb-katha-card h3,
-.kb-track-info h3 {
-  margin: 0;
+.kb-katha-card h3 {
+  margin: 0 0 10px;
   color: var(--kb-maroon);
-  font-family: "Playfair Display", Georgia, serif;
-  font-size: 20px;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 18px;
   font-weight: 700;
-  line-height: 1.45;
-  overflow-wrap: anywhere;
+  line-height: 1.4;
 }
 
 .kb-card-description {
-  margin: 12px 0 22px;
+  margin: 0 0 16px;
   color: var(--kb-muted);
   font-size: 13px;
-  line-height: 1.9;
+  line-height: 1.7;
 }
 
 .kb-full-text {
-  margin: 0 0 20px;
-  padding: 16px;
+  margin-bottom: 16px;
+  padding: 12px 14px;
   border-left: 3px solid var(--kb-gold);
   border-radius: 0 10px 10px 0;
-  background: #f5f5eb;
-}
-
-.kb-full-text p {
-  margin: 0;
-  color: #5f6658;
+  background: #fcf6ee;
   font-size: 13px;
-  line-height: 1.95;
+  color: #553e45;
 }
 
 .kb-card-bottom {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 10px;
   margin-top: auto;
-  padding-top: 17px;
-  border-top: 1px solid #ece9dc;
-}
-
-.kb-card-bottom > span {
-  color: #929184;
-  font-size: 11px;
+  padding-top: 14px;
+  border-top: 1px solid #f2e7dc;
+  font-size: 12px;
+  color: var(--kb-muted);
 }
 
 .kb-read-button {
   display: inline-flex;
   align-items: center;
-  gap: 7px;
-  padding: 8px 0 8px 8px;
-  border: 0;
+  gap: 5px;
+  border: none;
   background: transparent;
   color: var(--kb-saffron-dark);
-  font-size: 12px;
-  font-weight: 700;
+  font-size: 12.5px;
+  font-weight: 750;
   cursor: pointer;
-  transition: color 0.2s ease;
 }
 
 .kb-read-button:hover {
   color: var(--kb-maroon);
 }
 
-.kb-read-button svg {
-  transition: transform 0.2s ease;
-}
-
-.kb-read-button:hover svg {
-  transform: translateX(3px);
-}
-
 .kb-read-button .kb-chevron-up {
   transform: rotate(180deg);
 }
 
-.kb-read-button:hover .kb-chevron-up {
-  transform: rotate(180deg) translateX(-3px);
-}
-
-/* =========================================
-   BHAJAN LIST AND AUDIO PLAYERS
-========================================= */
-
+/* Bhajan List */
 .kb-bhajan-list {
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  gap: 12px;
 }
 
 .kb-bhajan-card {
   display: flex;
   align-items: center;
-  gap: 20px;
-  min-width: 0;
-  padding: 21px 24px;
+  gap: 16px;
+  padding: 16px 20px;
   border: 1px solid var(--kb-border);
-  border-radius: 16px;
+  border-radius: 14px;
   background: var(--kb-paper);
-  box-shadow: 0 4px 17px rgba(35, 75, 60, 0.025);
-  transition: border-color 0.2s ease, box-shadow 0.2s ease,
-    transform 0.2s ease;
-}
-
-.kb-bhajan-card:hover {
-  transform: translateY(-2px);
-  border-color: #d5c69f;
-  box-shadow: 0 9px 24px rgba(35, 75, 60, 0.07);
+  box-shadow: var(--kb-shadow);
 }
 
 .kb-track-number {
-  width: 25px;
-  flex-shrink: 0;
-  color: #aaa58f;
+  color: #a48f97;
+  font-weight: 750;
   font-size: 13px;
-  font-weight: 700;
 }
 
 .kb-music-icon {
-  width: 55px;
-  height: 55px;
-  border-radius: 16px;
-  background: var(--kb-soft-green);
-  border-color: #dce5d7;
-  color: var(--kb-maroon);
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  background: #fbf2e3;
+  color: var(--kb-saffron-dark);
 }
 
 .kb-track-info {
-  flex: 1 1 180px;
-  min-width: 0;
+  flex: 1 1 200px;
 }
 
 .kb-track-category {
-  display: inline-block;
-  margin-bottom: 5px;
-  color: var(--kb-saffron-dark);
   font-size: 10px;
-  font-weight: 700;
-  letter-spacing: 1.1px;
+  font-weight: 750;
+  color: var(--kb-saffron-dark);
   text-transform: uppercase;
 }
 
 .kb-track-info h3 {
-  font-family: "DM Sans", sans-serif;
+  margin: 2px 0 0;
   font-size: 15px;
   font-weight: 700;
-  line-height: 1.5;
+  color: var(--kb-maroon);
 }
 
 .kb-track-info p {
-  margin: 5px 0 0;
+  margin: 2px 0 0;
   color: var(--kb-muted);
   font-size: 12px;
-  line-height: 1.6;
 }
-
-.kb-audio-area {
-  flex: 0 1 300px;
-  min-width: 0;
-}
-
-.kb-audio-area audio {
-  display: block;
-  width: 100%;
-  max-width: 300px;
-  height: 42px;
-}
-
-/* =========================================
-   EMPTY RESULTS
-========================================= */
-
-.kb-empty {
-  grid-column: 1 / -1;
-  padding: 42px 20px;
-  border: 1px dashed #d9d5c5;
-  border-radius: 16px;
-  background: rgba(255, 254, 250, 0.7);
-  color: var(--kb-muted);
-  text-align: center;
-}
-
-/* =========================================
-   DEVOTIONAL NOTE
-========================================= */
 
 .kb-bottom-note {
   display: flex;
   align-items: center;
-  gap: 17px;
-  margin-top: 42px;
-  padding: 25px 27px;
-  border: 1px solid #e1d4b4;
-  border-radius: 16px;
-  background: linear-gradient(120deg, #f2f1e5, #faf3df);
+  gap: 14px;
+  margin-top: 36px;
+  padding: 18px 22px;
+  border: 1px solid #ebd4a8;
+  border-radius: 14px;
+  background: linear-gradient(120deg, #fdf7ec, #faf0da);
   color: var(--kb-saffron-dark);
-}
-
-.kb-bottom-note > svg {
-  flex-shrink: 0;
 }
 
 .kb-bottom-note strong {
   color: var(--kb-maroon);
-  font-size: 14px;
+  font-size: 13.5px;
 }
 
 .kb-bottom-note p {
-  margin: 6px 0 0;
+  margin: 4px 0 0;
   color: var(--kb-muted);
   font-size: 12px;
-  line-height: 1.8;
 }
 
-/* =========================================
-   FOOTER
-========================================= */
-
-.kb-footer {
-  padding: 37px 20px 39px;
-  border-top: 1px solid #e5e0d0;
-  background: #eeeee3;
-  text-align: center;
-}
-
-.kb-footer-symbol {
-  color: var(--kb-saffron-dark);
-  font-family: "Playfair Display", Georgia, serif;
-  font-size: 30px;
-  line-height: 1.4;
-}
-
-.kb-footer p {
-  margin: 9px 0;
-  color: var(--kb-maroon);
-  font-family: "Playfair Display", Georgia, serif;
-  font-size: 18px;
-}
-
-.kb-footer > span:last-child {
-  color: var(--kb-muted);
-  font-size: 10px;
-  letter-spacing: 1.5px;
-  text-transform: uppercase;
-}
-
-/* =========================================
-   TABLET RESPONSIVE
-========================================= */
-
-@media (max-width: 900px) {
-  .kb-hero {
-    min-height: 465px;
-    padding: 65px 6%;
-    background-position: 58% center;
-  }
-
-  .kb-hero::before {
-    background: linear-gradient(
-      90deg,
-      rgba(17, 45, 35, 0.94),
-      rgba(25, 59, 45, 0.76)
-    );
-  }
-
-  .kb-hero-note {
-    right: 6%;
-  }
-
-  .kb-library {
-    padding-top: 64px;
-  }
-
+@media (max-width: 860px) {
   .kb-katha-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 17px;
+    grid-template-columns: 1fr;
   }
-
-  .kb-katha-card {
-    padding: 22px;
-  }
-
-  .kb-toolbar {
-    align-items: flex-start;
-  }
-
-  .kb-audio-area {
-    flex-basis: 240px;
-  }
-}
-
-/* =========================================
-   MOBILE RESPONSIVE
-========================================= */
-
-@media (max-width: 600px) {
-  .kb-hero {
-    min-height: 450px;
-    padding: 55px 23px 83px;
-    background-position: 61% center;
-  }
-
-  .kb-hero::before {
-    background: rgba(17, 45, 35, 0.79);
-  }
-
-  .kb-eyebrow {
-    gap: 7px;
-    margin-bottom: 19px;
-    padding: 8px 11px;
-    font-size: 9px;
-    letter-spacing: 0.9px;
-  }
-
-  .kb-hero h1 {
-    font-size: clamp(40px, 11vw, 56px);
-    letter-spacing: -0.8px;
-  }
-
-  .kb-hero-content > p {
-    margin: 18px 0 24px;
-    font-size: 13px;
-    line-height: 1.85;
-  }
-
-  .kb-hero-button {
-    min-height: 47px;
-    padding: 0 17px;
-    font-size: 12px;
-  }
-
-  .kb-hero-note {
-    right: 20px;
-    bottom: 21px;
-    left: 20px;
-    font-size: 10px;
-  }
-
-  .kb-library {
-    width: calc(100% - 32px);
-    padding: 49px 0 43px;
-  }
-
-  .kb-section-heading {
-    margin-bottom: 25px;
-  }
-
-  .kb-overline {
-    font-size: 10px;
-    letter-spacing: 1.8px;
-  }
-
-  .kb-section-heading h2 {
-    margin: 10px 0;
-    font-size: 32px;
-  }
-
-  .kb-section-heading > p {
-    font-size: 12px;
-    line-height: 1.8;
-  }
-
-  .kb-tabs {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    width: 100%;
-    gap: 4px;
-    margin-bottom: 23px;
-    padding: 5px;
-  }
-
-  .kb-tab {
-    min-width: 0;
-    min-height: 46px;
-    gap: 6px;
-    padding: 8px 5px;
-    font-size: 11px;
-  }
-
-  .kb-tab svg {
-    width: 17px;
-    height: 17px;
-    flex-shrink: 0;
-  }
-
-  .kb-toolbar {
-    align-items: stretch;
-    gap: 12px;
-    margin-bottom: 20px;
-  }
-
-  .kb-search {
-    flex-basis: 100%;
-    max-width: none;
-    min-height: 46px;
-  }
-
-  .kb-filters {
-    gap: 7px;
-  }
-
-  .kb-filter {
-    min-height: 34px;
-    padding: 0 11px;
-    font-size: 10px;
-  }
-
-  .kb-katha-grid {
-    grid-template-columns: minmax(0, 1fr);
-    gap: 15px;
-  }
-
-  .kb-katha-card {
-    min-height: auto;
-    padding: 22px;
-    border-radius: 15px;
-  }
-
-  .kb-number {
-    font-size: 23px;
-  }
-
-  .kb-card-icon {
-    margin-top: 20px;
-  }
-
-  .kb-katha-card h3 {
-    font-size: 19px;
-  }
-
-  .kb-card-description {
-    margin-bottom: 18px;
-    font-size: 12px;
-  }
-
-  .kb-full-text {
-    padding: 13px;
-  }
-
-  .kb-full-text p {
-    font-size: 12px;
-  }
-
   .kb-bhajan-card {
-    display: grid;
-    grid-template-columns: 20px 44px minmax(0, 1fr);
-    gap: 11px;
-    padding: 15px;
-    border-radius: 14px;
+    flex-wrap: wrap;
   }
-
-  .kb-track-number {
-    width: auto;
-    font-size: 11px;
-  }
-
-  .kb-music-icon {
-    width: 44px;
-    height: 44px;
-    border-radius: 12px;
-  }
-
-  .kb-music-icon svg {
-    width: 20px;
-    height: 20px;
-  }
-
-  .kb-track-info {
-    min-width: 0;
-  }
-
-  .kb-track-info h3 {
-    font-size: 13px;
-    overflow-wrap: anywhere;
-  }
-
-  .kb-track-info p {
-    font-size: 11px;
-  }
-
   .kb-audio-area {
-    grid-column: 2 / -1;
     width: 100%;
-  }
-
-  .kb-audio-area audio {
-    width: 100%;
-    max-width: none;
-    height: 40px;
-  }
-
-  .kb-bottom-note {
-    align-items: flex-start;
-    gap: 12px;
-    margin-top: 27px;
-    padding: 18px 15px;
-  }
-
-  .kb-bottom-note strong {
-    font-size: 13px;
-  }
-
-  .kb-bottom-note p {
-    font-size: 11px;
-  }
-
-  .kb-footer {
-    padding: 28px 16px;
-  }
-
-  .kb-footer p {
-    font-size: 16px;
-  }
-}
-
-/* =========================================
-   ACCESSIBILITY
-========================================= */
-
-@media (prefers-reduced-motion: reduce) {
-  .kb-page *,
-  .kb-page *::before,
-  .kb-page *::after {
-    scroll-behavior: auto !important;
-    transition-duration: 0.01ms !important;
-    animation-duration: 0.01ms !important;
   }
 }

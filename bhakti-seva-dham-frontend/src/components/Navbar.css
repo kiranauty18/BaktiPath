@@ -1,160 +1,224 @@
+/* ==========================================
+   BHAKTI SEVA DHAM - NAVBAR
+========================================== */
 
 .site-navbar {
   position: sticky;
   top: 0;
-  z-index: 1000;
+  left: 0;
+  width: 100%;
+  z-index: 9999;
+  background-color: #fffaf1 !important;
+  border-bottom: 1px solid #ebd9c5;
+  box-shadow: 0 4px 18px rgba(74, 14, 23, 0.05);
+}
+
+.site-navbar-container {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 24px;
-  padding: 13px 5%;
-  background: #fffaf1;
-  border-bottom: 1px solid #efe3d2;
-  box-shadow: 0 3px 15px rgba(65, 35, 28, 0.05);
+  width: 100%;
+  max-width: 1240px;
+  min-height: 72px;
+  margin: 0 auto;
+  padding: 0 24px;
 }
 
+/* Brand */
 .site-brand {
-  display: flex;
+  display: inline-flex;
   align-items: center;
-  gap: 11px;
-  color: #542638;
+  gap: 12px;
   text-decoration: none;
   flex-shrink: 0;
 }
 
 .site-brand-icon {
+  position: relative;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  overflow: hidden;
+  border: 1.5px solid #d4af37;
+  background: #fdfbf7;
   display: grid;
   place-items: center;
-  width: 43px;
-  height: 43px;
-  border-radius: 50%;
-  background: #c66a25;
-  color: white;
-  font-size: 23px;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.08);
 }
 
-.site-brand strong,
-.site-brand small {
+.site-brand-icon img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.brand-fallback-om {
+  display: none;
+  font-size: 20px;
+  font-weight: 700;
+  color: #ff8c00;
+}
+
+.site-brand-icon img[style*="display: none"] + .brand-fallback-om {
   display: block;
 }
 
-.site-brand strong {
-  font-size: 16px;
+.site-brand-text strong {
+  display: block;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 19px;
+  font-weight: 700;
+  color: #4a0e17;
+  line-height: 1.2;
 }
 
-.site-brand small {
-  margin-top: 3px;
-  color: #89736b;
+.site-brand-text small {
+  display: block;
+  margin-top: 2px;
   font-size: 11px;
+  color: #a26532;
+  font-family: "Segoe UI", Arial, sans-serif;
+  font-weight: 500;
 }
 
+/* Nav Links */
 .site-nav-links {
   display: flex;
   align-items: center;
-  gap: 5px;
+  gap: 8px;
 }
 
 .site-nav-link {
-  padding: 10px 12px;
-  border-radius: 8px;
-  color: #654a4e;
-  text-decoration: none;
-  font-size: 13px;
-  font-weight: 600;
-  transition: background 0.2s, color 0.2s;
-}
-
-.site-nav-link:hover,
-.site-nav-link.nav-active {
-  background: #f5e8d5;
-  color: #a84c17;
-}
-
-.nav-donate-link {
   display: inline-flex;
   align-items: center;
-  justify-content: center;
-  gap: 7px;
-  margin-left: 5px;
-  padding: 11px 14px;
-  border-radius: 8px;
-  background: #542638;
-  color: white;
+  padding: 8px 14px;
+  border-radius: 999px;
+  color: #4a0e17;
+  font-size: 13.5px;
+  font-weight: 600;
   text-decoration: none;
+  transition: all 0.2s ease;
+}
+
+.site-nav-link:hover {
+  background-color: #f7ebd9;
+  color: #b25800;
+}
+
+.site-nav-link.nav-active {
+  background-color: #f3e2cc;
+  color: #8f3d00;
+  font-weight: 700;
+}
+
+/* Naam Jap Button Badge */
+.nav-jap-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 7px 15px;
+  margin: 0 4px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 140, 0, 0.4);
+  background: rgba(255, 140, 0, 0.1);
+  color: #b85b00;
   font-size: 13px;
   font-weight: 700;
-  white-space: nowrap;
+  text-decoration: none;
+  box-shadow: 0 2px 6px rgba(255, 140, 0, 0.08);
+  transition: all 0.2s ease;
 }
 
-.nav-donate-link:hover {
-  background: #71364b;
+.nav-jap-badge:hover,
+.nav-jap-badge.jap-active {
+  background: #ff8c00;
+  color: #ffffff;
+  border-color: #ff8c00;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(255, 140, 0, 0.25);
 }
 
+/* Hamburger Toggle */
 .nav-menu-toggle {
   display: none;
   align-items: center;
   justify-content: center;
-  width: 42px;
-  height: 42px;
-  border: 1px solid #efe3d2;
-  border-radius: 9px;
-  background: white;
-  color: #542638;
+  width: 40px;
+  height: 40px;
+  border: 1px solid #ebd9c5;
+  border-radius: 10px;
+  background: #ffffff;
+  color: #4a0e17;
   cursor: pointer;
+  transition: background 0.2s;
 }
 
-@media (max-width: 900px) {
-  .site-navbar {
-    flex-wrap: wrap;
-    padding: 12px 20px;
+.nav-menu-toggle:hover {
+  background: #fbf5ed;
+}
+
+/* Mobile Drawer */
+.site-nav-drawer {
+  display: none;
+  flex-direction: column;
+  gap: 6px;
+  padding: 12px 20px 20px;
+  background: #fffaf1;
+  border-top: 1px solid #ebd9c5;
+}
+
+.drawer-link {
+  display: block;
+  padding: 10px 14px;
+  border-radius: 8px;
+  color: #4a0e17;
+  font-size: 14px;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.drawer-link:hover {
+  background: #f7ebd9;
+}
+
+.drawer-link-jap {
+  display: block;
+  padding: 11px 14px;
+  border-radius: 10px;
+  background: #ff8c00;
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 700;
+  text-decoration: none;
+  text-align: center;
+  margin: 6px 0;
+}
+
+/* Tablet & Mobile Media Queries */
+@media (max-width: 960px) {
+  .site-nav-links {
+    display: none;
   }
 
   .nav-menu-toggle {
     display: flex;
   }
 
-  .site-nav-links {
-    display: none;
-    flex-basis: 100%;
-    align-items: stretch;
-    flex-direction: column;
-    gap: 5px;
-    padding: 8px 0 5px;
-  }
-
-  .site-nav-links.nav-open {
+  .site-nav-drawer {
     display: flex;
-  }
-
-  .site-nav-link {
-    padding: 13px;
-  }
-
-  .nav-donate-link {
-    margin: 5px 0 0;
-    min-height: 44px;
   }
 }
 
-@media (max-width: 400px) {
-  .site-navbar {
-    padding: 10px 12px;
+@media (max-width: 480px) {
+  .site-navbar-container {
+    padding: 0 16px;
+    min-height: 64px;
   }
 
-  .site-brand {
-    gap: 8px;
+  .site-brand-text strong {
+    font-size: 16px;
   }
 
-  .site-brand-icon {
-    width: 38px;
-    height: 38px;
-  }
-
-  .site-brand strong {
-    font-size: 14px;
-  }
-
-  .site-brand small {
+  .site-brand-text small {
     font-size: 10px;
   }
 }
