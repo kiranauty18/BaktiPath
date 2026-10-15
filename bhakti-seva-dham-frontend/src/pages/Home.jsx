@@ -1,3 +1,5 @@
+import React from 'react';
+import { Link } from 'react-router-dom';
 import './Home.css';
 
 import {
@@ -26,13 +28,13 @@ export default function Home() {
         </p>
 
         <div className="hero-actions">
-          <a className="primary-button" href="#quiz">
+          <Link className="primary-button" to="/quiz">
             Play Today's Quiz <ArrowRight size={18} />
-          </a>
+          </Link>
 
-          <a className="secondary-button" href="#seva">
+          <Link className="secondary-button" to="/seva">
             <Heart size={18} /> Explore Seva
-          </a>
+          </Link>
         </div>
       </section>
 
@@ -44,7 +46,7 @@ export default function Home() {
         </div>
 
         <div className="activity-grid">
-          <article className="activity-card" id="quiz">
+          <article className="activity-card">
             <div className="activity-icon">
               <Award size={30} />
             </div>
@@ -53,10 +55,10 @@ export default function Home() {
               Test your knowledge of devotional stories
               and follow your quiz progress.
             </p>
-            <a href="#quiz">Explore Quiz →</a>
+            <Link to="/quiz">Explore Quiz →</Link>
           </article>
 
-          <article className="activity-card" id="katha">
+          <article className="activity-card">
             <div className="activity-icon">
               <BookOpen size={30} />
             </div>
@@ -65,10 +67,10 @@ export default function Home() {
               Discover spiritual notes, devotional songs
               and stories from Sanatan Dharma.
             </p>
-            <a href="#katha">Explore Katha →</a>
+            <Link to="/katha-bhajans">Explore Katha →</Link>
           </article>
 
-          <article className="activity-card" id="seva">
+          <article className="activity-card">
             <div className="activity-icon">
               <Gift size={30} />
             </div>
@@ -77,7 +79,7 @@ export default function Home() {
               Learn about community service, devotional
               activities and upcoming events.
             </p>
-            <a href="#seva">Explore Seva →</a>
+            <Link to="/seva">Explore Seva →</Link>
           </article>
         </div>
       </section>

@@ -320,7 +320,7 @@ export default function KathaBhajans() {
       </section>
 
       <footer className="kb-footer">
-        <span className="kb-footer-symbol">ॐ</span>
+        <span className="kb-footer-symbol"></span>
         <p>With श्रद्धा, सेवा, and प्रेम.</p>
         <span>Bhakti Seva Dham</span>
       </footer>

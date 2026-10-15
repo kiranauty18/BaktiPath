@@ -1,0 +1,295 @@
+/* ==========================================
+   BHAKTI SEVA DHAM - NAAM JAP STYLING
+========================================== */
+
+:root {
+  --jap-burgundy: #641E2B;
+  --jap-dark-maroon: #4A0E17;
+  --jap-cream: #FFF8ED;
+  --jap-gold: #C6A15B;
+  --jap-gold-light: #F4E08B;
+  --jap-text: #35251F;
+}
+
+.jap-page {
+  min-height: 100vh;
+  padding: 40px 20px;
+  background-color: var(--jap-cream);
+  background-image: 
+    radial-gradient(circle at 10% 20%, rgba(198, 161, 91, 0.1) 0%, transparent 40%),
+    radial-gradient(circle at 90% 80%, rgba(100, 30, 43, 0.08) 0%, transparent 40%);
+  color: var(--jap-text);
+  font-family: Georgia, "Times New Roman", serif;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.jap-container {
+  width: 100%;
+  max-width: 480px;
+  background: #FFFFFF;
+  border: 2px solid var(--jap-gold);
+  border-radius: 24px;
+  padding: 30px;
+  box-shadow: 0 15px 35px rgba(53, 37, 31, 0.08);
+}
+
+.jap-header {
+  text-align: center;
+  margin-bottom: 24px;
+}
+
+.jap-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 18px;
+  border: 1px solid var(--jap-gold);
+  border-radius: 50px;
+  background: linear-gradient(135deg, #FFF5E1, #FCEFD8);
+  color: var(--jap-burgundy);
+  font-family: Arial, sans-serif;
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.jap-header h1 {
+  margin: 15px 0 8px;
+  color: var(--jap-burgundy);
+  font-size: 28px;
+  font-weight: 800;
+}
+
+.jap-header p {
+  color: #7A655C;
+  font-family: Arial, sans-serif;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+/* Input Field */
+.jap-input-group {
+  margin-bottom: 20px;
+}
+
+.jap-input-group label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--jap-burgundy);
+  margin-bottom: 6px;
+}
+
+.jap-input-group input {
+  width: 100%;
+  padding: 12px 16px;
+  border: 1px solid #E2CE9D;
+  border-radius: 12px;
+  background: var(--jap-cream);
+  color: var(--jap-text);
+  font-size: 15px;
+  outline: none;
+}
+
+.jap-input-group input:focus {
+  border-color: var(--jap-burgundy);
+  box-shadow: 0 0 0 3px rgba(100, 30, 43, 0.1);
+}
+
+/* Top Controls */
+.jap-controls-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.jap-control-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  border: 1px solid #E2CE9D;
+  background: var(--jap-cream);
+  color: var(--jap-text);
+  transition: all 0.2s;
+}
+
+.jap-control-btn.reset {
+  border-color: #F8D7DA;
+  background: #FFF5F5;
+  color: #DC3545;
+}
+
+/* Progress Bar */
+.jap-progress-box {
+  margin-bottom: 20px;
+}
+
+.jap-progress-info {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--jap-burgundy);
+  margin-bottom: 6px;
+}
+
+.jap-progress-bar-bg {
+  width: 100%;
+  height: 8px;
+  background: var(--jap-cream);
+  border-radius: 10px;
+  overflow: hidden;
+  border: 1px solid #E2CE9D;
+}
+
+.jap-progress-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #C6A15B, #E65100);
+  border-radius: 10px;
+  transition: width 0.3s ease;
+}
+
+/* Main Counter Display */
+.jap-counter-display {
+  text-align: center;
+  padding: 20px;
+  background: linear-gradient(135deg, #FFFDF8, #FAF0D6);
+  border: 1px solid #E2CE9D;
+  border-radius: 16px;
+  margin-bottom: 24px;
+}
+
+.jap-counter-label {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: #897780;
+  font-weight: 700;
+}
+
+.jap-counter-number {
+  font-size: 56px;
+  font-weight: 900;
+  color: var(--jap-burgundy);
+  line-height: 1.1;
+  margin: 6px 0;
+}
+
+.jap-points-text {
+  font-size: 13px;
+  font-weight: 600;
+  color: #8C6218;
+}
+
+/* Tap Button (Gradient Orange/Gold) */
+.jap-tap-wrapper {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 24px;
+}
+
+.jap-tap-button {
+  width: 140px;
+  height: 140px;
+  border-radius: 50%;
+  border: 4px solid #FFFDF8;
+  background: linear-gradient(135deg, #FF8C00, #D4AF37);
+  color: #FFFFFF;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  font-family: inherit;
+  font-weight: 800;
+  font-size: 20px;
+  box-shadow: 0 10px 25px rgba(255, 140, 0, 0.35);
+  cursor: pointer;
+  outline: none;
+}
+
+.jap-tap-subtext {
+  font-size: 11px;
+  font-weight: normal;
+  opacity: 0.9;
+  font-family: Arial, sans-serif;
+}
+
+/* Action Buttons (Undo & Leaderboard) */
+.jap-action-buttons {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.jap-action-btn {
+  flex: 1;
+  padding: 12px;
+  border-radius: 12px;
+  font-size: 13px;
+  font-weight: 700;
+  text-align: center;
+  cursor: pointer;
+  border: 1px solid #E2CE9D;
+  background: #FFFFFF;
+  color: var(--jap-text);
+  text-decoration: none;
+  transition: all 0.2s;
+}
+
+.jap-action-btn.primary {
+  background: var(--jap-burgundy);
+  color: #FFFFFF;
+  border-color: var(--jap-gold);
+}
+
+.jap-action-btn.primary:hover {
+  background: #521622;
+}
+
+.jap-action-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  background: #F5F5F5;
+}
+
+/* Footer Stats Grid */
+.jap-stats-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  border-top: 1px solid #E2CE9D;
+  padding-top: 16px;
+}
+
+.jap-stat-card {
+  background: var(--jap-cream);
+  border: 1px solid #E2CE9D;
+  border-radius: 12px;
+  padding: 12px;
+  text-align: center;
+}
+
+.jap-stat-label {
+  font-size: 11px;
+  color: #7A655C;
+  font-family: Arial, sans-serif;
+  margin-bottom: 2px;
+}
+
+.jap-stat-value {
+  font-size: 16px;
+  font-weight: 800;
+  color: var(--jap-burgundy);
+}

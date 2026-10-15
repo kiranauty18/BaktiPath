@@ -1,357 +1,236 @@
-
-import { useState } from "react";
-import {
-  Award,
-  CheckCircle2,
-  AlertCircle,
-  Sparkles,
-  User,
-  Trophy,
-} from "lucide-react";
-import { Link } from "react-router-dom";
-import "./Quiz.css";
-
-const quizQuestions = [
-  {
-    id: 1,
-    question:
-      "Who is traditionally associated with the manifestation of Shri Radha Raman Ji in Vrindavan?",
-    options: [
-      "Gopal Bhatta Goswami",
-      "Swami Haridas",
-      "Chaitanya Mahaprabhu",
-      "Rupa Goswami",
-    ],
-    correctAnswerIndex: 0,
-  },
-  {
-    id: 2,
-    question: "In which city is Banke Bihari Ji's famous temple located?",
-    options: ["Mathura", "Vrindavan", "Ayodhya", "Dwarka"],
-    correctAnswerIndex: 1,
-  },
-  {
-    id: 3,
-    question: "How many chapters are there in the Bhagavad Gita?",
-    options: ["12", "15", "18", "20"],
-    correctAnswerIndex: 2,
-  },
-  {
-    id: 4,
-    question: "Which river is especially associated with Krishna's pastimes in Vrindavan?",
-    options: ["Godavari", "Narmada", "Yamuna", "Kaveri"],
-    correctAnswerIndex: 2,
-  },
-  {
-    id: 5,
-    question: "Barsana is traditionally associated with which divine personality?",
-    options: [
-      "Radha Rani",
-      "Goddess Saraswati",
-      "Goddess Lakshmi",
-      "Goddess Durga",
-    ],
-    correctAnswerIndex: 0,
-  },
-  {
-    id: 6,
-    question: "Who delivers the teachings to Arjuna in the Bhagavad Gita?",
-    options: ["Lord Shiva", "Lord Krishna", "Lord Brahma", "Narada Muni"],
-    correctAnswerIndex: 1,
-  },
-  {
-    id: 7,
-    question: "What does the word 'seva' commonly mean in a devotional context?",
-    options: [
-      "Selfless service",
-      "Competition",
-      "Celebration only",
-      "Pilgrimage only",
-    ],
-    correctAnswerIndex: 0,
-  },
-  {
-    id: 8,
-    question: "Govardhan Hill is closely associated with which pastime of Krishna?",
-    options: [
-      "Lifting Govardhan Hill",
-      "Building the Ram Setu",
-      "Churning the ocean",
-      "Teaching archery",
-    ],
-    correctAnswerIndex: 0,
-  },
-  {
-    id: 9,
-    question: "Which sacred text contains the story of Prahlada and Narasimha?",
-    options: [
-      "Bhagavata Purana",
-      "Arthashastra",
-      "Natya Shastra",
-      "Yoga Sutras",
-    ],
-    correctAnswerIndex: 0,
-  },
-  {
-    id: 10,
-    question: "Which quality is encouraged by the practice of bhakti?",
-    options: ["Devotion", "Pride", "Greed", "Jealousy"],
-    correctAnswerIndex: 0,
-  },
-];
-
-const STORAGE_KEY = "bhaktiQuizResults";
+import React, { useState } from 'react';
+import { Award, Sparkles, User } from 'lucide-react';
+import './Quiz.css';
 
 export default function Quiz() {
-  const [userName, setUserName] = useState("");
+  const [userName, setUserName] = useState('');
   const [userAnswers, setUserAnswers] = useState({});
   const [isSubmitted, setIsSubmitted] = useState(false);
-  const [result, setResult] = useState(null);
-  const [error, setError] = useState("");
+  const [score, setScore] = useState(0);
 
-  const totalPoints = quizQuestions.length * 10;
+  const quizQuestions = [
+    {
+      id: 1,
+      question: "Shri Radha Raman Ji ka prakatya utsav kahan aur kiske dwara hua tha?",
+      options: [
+        "A) Gopal Bhatta Goswami, Vrindavan mein",
+        "B) Swami Haridas, Banke Bihari Mandir mein",
+        "C) Chaitanya Mahaprabhu, Puri mein",
+        "D) Rupa Goswami, Govardhan mein"
+      ],
+      correct: 0
+    },
+    {
+      id: 2,
+      question: "Banke Bihari Ji ki nitya lila aur aarti kis sthan par hoti hai?",
+      options: [
+        "A) Barsana",
+        "B) Vrindavan",
+        "C) Goverdhan",
+        "D) Nandgaon"
+      ],
+      correct: 1
+    },
+    {
+      id: 3,
+      question: "Sanatan Dharma mein Yamuna Maharani kiska swaroop mani jati hain?",
+      options: [
+        "A) Surya Putri / Pavitra Nadi",
+        "B) Ganga ji ki behan",
+        "C) Devlok ki apsara",
+        "D) Inmein se koi nahi"
+      ],
+      correct: 0
+    },
+    {
+      id: 4,
+      question: "Shrimad Bhagavad Gita mein kul kitne adhyay (chapters) hain?",
+      options: [
+        "A) 12",
+        "B) 15",
+        "C) 18",
+        "D) 20"
+      ],
+      correct: 2
+    },
+    {
+      id: 5,
+      question: "Shri Radha Rani ka prakatya sthal kahan mana jata hai?",
+      options: [
+        "A) Mathura",
+        "B) Barsana",
+        "C) Gokul",
+        "D) Vrindavan"
+      ],
+      correct: 1
+    }
+  ];
 
-  function handleOptionChange(questionId, optionIndex) {
-    if (isSubmitted) return;
+  const handleOptionChange = (questionId, optionIndex) => {
+    if (!isSubmitted) {
+      setUserAnswers({
+        ...userAnswers,
+        [questionId]: optionIndex
+      });
+    }
+  };
 
-    setUserAnswers((previous) => ({
-      ...previous,
-      [questionId]: optionIndex,
-    }));
-
-    setError("");
-  }
-
-  function handleSubmit(event) {
-    event.preventDefault();
-
+  const handleSubmit = (e) => {
+    e.preventDefault();
     if (!userName.trim()) {
-      setError("Please enter your name before submitting.");
+      alert("Kripya quiz submit karne se pehle apna Naam (Devotee Name) darj karein!");
+      return;
+    }
+    if (Object.keys(userAnswers).length === 0) {
+      alert("Kripya kam se kam ek question ka jawab dein!");
       return;
     }
 
-    if (Object.keys(userAnswers).length !== quizQuestions.length) {
-      setError("Please answer all 10 questions before submitting.");
-      return;
-    }
-
-    const calculatedScore = quizQuestions.reduce((total, question) => {
-      return total +
-        (userAnswers[question.id] === question.correctAnswerIndex ? 10 : 0);
-    }, 0);
-
-    const newResult = {
-      id: `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
-      name: userName.trim(),
-      score: calculatedScore,
-      totalPoints,
-      percentage: Math.round((calculatedScore / totalPoints) * 100),
-      date: new Date().toISOString(),
-    };
-
-    try {
-      const savedResults = JSON.parse(
-        localStorage.getItem(STORAGE_KEY) || "[]"
-      );
-
-      if (!Array.isArray(savedResults)) {
-        throw new Error("Saved quiz results have an invalid format.");
+    let calculatedScore = 0;
+    quizQuestions.forEach((q) => {
+      if (userAnswers[q.id] === q.correct) {
+        calculatedScore += 10;
       }
+    });
 
-      localStorage.setItem(
-        STORAGE_KEY,
-        JSON.stringify([...savedResults, newResult])
-      );
+    setScore(calculatedScore);
+    setIsSubmitted(true);
 
-      setResult(newResult);
-      setIsSubmitted(true);
-      setError("");
-    } catch (storageError) {
-      console.error("Unable to save quiz result:", storageError);
-      setError(
-        "Your result could not be saved. Please check your browser storage and try again."
-      );
+    // Save score to Leaderboard local storage
+    const existingLeaderboard = JSON.parse(localStorage.getItem('quiz_leaderboard') || '[]');
+    const userIndex = existingLeaderboard.findIndex(item => item.name.toLowerCase() === userName.trim().toLowerCase());
+    
+    if (userIndex !== -1) {
+      existingLeaderboard[userIndex].score = calculatedScore;
+    } else {
+      existingLeaderboard.push({ name: userName.trim(), score: calculatedScore });
     }
-  }
 
-  function handleReset() {
-    setUserName("");
-    setUserAnswers({});
+    existingLeaderboard.sort((a, b) => b.score - a.score);
+    localStorage.setItem('quiz_leaderboard', JSON.stringify(existingLeaderboard));
+  };
+
+  const handleReset = () => {
     setIsSubmitted(false);
-    setResult(null);
-    setError("");
-  }
+    setUserAnswers({});
+    setUserName('');
+    setScore(0);
+  };
 
   return (
-    <main className="quiz-page">
+    <div className="quiz-page">
       <div className="quiz-container">
-        <header className="quiz-header">
-          <span className="quiz-badge">
-            Daily Challenge · 10 Questions
-          </span>
-
-          <h1>Daily Katha Quiz</h1>
-
-          <p>
-            Learn about devotional traditions and test your spiritual knowledge.
-          </p>
-        </header>
-
-        <section className="darshan-card">
-          <div className="darshan-symbol" aria-hidden="true">
-            ॐ
+        
+        {/* Header */}
+        <div className="quiz-header">
+          <div className="quiz-badge">
+            <Sparkles size={15} />
+            <span>DAILY KATHA QUIZ</span>
           </div>
-          <h2>Shri Radha Raman Ji</h2>
-          <p>Divine Darshan · Vrindavan</p>
-          <p className="darshan-note">
-            Add your temple photograph to your public images folder when ready.
-          </p>
-        </section>
+          <h1>Shri Radha Raman &amp; Banke Bihari Quiz</h1>
+          <p>Sahi vikalp chunein, apna naam likhein aur score leaderboard par darj karein.</p>
+        </div>
 
         {!isSubmitted ? (
-          <form className="quiz-card" onSubmit={handleSubmit}>
-            <div className="quiz-name-field">
-              <label htmlFor="quiz-user-name">
-                <User size={18} />
-                Your Name
-              </label>
-
-              <input
-                id="quiz-user-name"
-                type="text"
-                value={userName}
-                onChange={(event) => {
-                  setUserName(event.target.value);
-                  setError("");
-                }}
-                placeholder="Enter your name"
-                maxLength={80}
-                autoComplete="name"
-                required
-              />
+          <form onSubmit={handleSubmit}>
+            
+            {/* User Name Input Card */}
+            <div className="quiz-card">
+              <div className="quiz-name-field">
+                <label>
+                  <User size={16} />
+                  <span>Aapka Naam (Devotee Name) *</span>
+                </label>
+                <input 
+                  type="text"
+                  value={userName}
+                  onChange={(e) => setUserName(e.target.value)}
+                  placeholder="Apna poora naam yahan likhein..."
+                  required
+                />
+              </div>
             </div>
 
-            <div className="quiz-card-heading">
-              <h2>
-                <Sparkles size={22} />
-                Questions of the Day
-              </h2>
-              <span className="points-badge">
-                10 points each
-              </span>
-            </div>
+            {/* Questions Card */}
+            <div className="quiz-card">
+              {quizQuestions.map((q, index) => (
+                <div key={q.id} className="quiz-question-block" style={{ marginTop: index === 0 ? 0 : '22px' }}>
+                  <div className="quiz-card-heading">
+                    <span className="quiz-question-number">Question {index + 1} of {quizQuestions.length}</span>
+                    <span className="points-badge">10 Points</span>
+                  </div>
+                  
+                  <h3 className="quiz-question">
+                    {q.question}
+                  </h3>
 
-            <p className="quiz-progress">
-              Answered: {Object.keys(userAnswers).length} of{" "}
-              {quizQuestions.length}
-            </p>
-
-            {quizQuestions.map((question, questionIndex) => (
-              <section className="quiz-question-block" key={question.id}>
-                <p className="quiz-question-number">
-                  Question {questionIndex + 1} of {quizQuestions.length}
-                </p>
-
-                <h3 className="quiz-question">
-                  {question.question}
-                </h3>
-
-                <div className="quiz-options">
-                  {question.options.map((option, optionIndex) => {
-                    const selected =
-                      userAnswers[question.id] === optionIndex;
-
-                    return (
-                      <label
-                        key={option}
-                        className={`quiz-option-label ${
-                          selected ? "selected" : ""
-                        }`}
+                  <div className="quiz-options">
+                    {q.options.map((option, optIdx) => (
+                      <label 
+                        key={optIdx}
+                        className={`quiz-option-label ${userAnswers[q.id] === optIdx ? 'selected' : ''}`}
                       >
-                        <input
+                        <input 
                           type="radio"
-                          name={`question-${question.id}`}
-                          value={optionIndex}
-                          checked={selected}
-                          onChange={() =>
-                            handleOptionChange(question.id, optionIndex)
-                          }
+                          name={`question-${q.id}`}
+                          checked={userAnswers[q.id] === optIdx}
+                          onChange={() => handleOptionChange(q.id, optIdx)}
                         />
-
-                        <span className="option-letter">
-                          {String.fromCharCode(65 + optionIndex)}
-                        </span>
-
+                        <span className="option-letter">{String.fromCharCode(65 + optIdx)}</span>
                         <span className="option-text">{option}</span>
                       </label>
-                    );
-                  })}
+                    ))}
+                  </div>
                 </div>
-              </section>
-            ))}
-
-            {error && (
-              <p className="quiz-error" role="alert">
-                <AlertCircle size={18} />
-                {error}
-              </p>
-            )}
-
-            <button
-              className="submit-quiz-button"
-              type="submit"
-              disabled={Object.keys(userAnswers).length !== quizQuestions.length}
-            >
-              <Sparkles size={19} />
-              Submit Quiz &amp; Save Score
-            </button>
-          </form>
-        ) : (
-          <section className="quiz-card quiz-result-card" role="status">
-            <div className="quiz-result-icon">
-              <Award size={38} />
-            </div>
-
-            <h2>Radhe Radhe, {result.name}!</h2>
-            <p>Your quiz has been submitted successfully.</p>
-
-            <div className="quiz-score-display">
-              <span>Your Score</span>
-              <strong>
-                {result.score} / {result.totalPoints}
-              </strong>
-              <span>{result.percentage}% correct</span>
-            </div>
-
-            <p>
-              {result.score === result.totalPoints
-                ? "Excellent! You answered every question correctly."
-                : result.score >= 70
-                  ? "Great effort! Keep learning and growing."
-                  : "Keep practising. Every quiz is a chance to learn."}
-            </p>
-
-            <div className="quiz-result-actions">
-              <Link to="/leaderboard" className="leaderboard-result-link">
-                <Trophy size={18} />
-                View Leaderboard
-              </Link>
+              ))}
 
               <button
-                type="button"
+                type="submit"
                 className="submit-quiz-button"
-                onClick={handleReset}
               >
-                Take Quiz Again
+                <span>Submit Answers &amp; Save Score</span>
               </button>
             </div>
-          </section>
+
+          </form>
+        ) : (
+          /* Result Card */
+          <div className="quiz-card quiz-result-card">
+            <div className="quiz-result-icon">
+              <Award size={46} />
+            </div>
+            
+            <h2 style={{ color: 'var(--burgundy)', fontSize: '28px', marginBottom: '8px' }}>Radhe Radhe, {userName} ji!</h2>
+            <p style={{ color: 'var(--muted-brown)' }}>Aapka quiz score safalpurvak Leaderboard par jodd diya gaya hai.</p>
+
+            <div className="quiz-score-display">
+              <span>Aapka Score</span>
+              <strong>{score} / {quizQuestions.length * 10} pts</strong>
+            </div>
+
+            <div className="quiz-result-actions">
+              <a
+                href="/leaderboard"
+                className="leaderboard-result-link"
+              >
+                View Leaderboard Ranking →
+              </a>
+              <button
+                onClick={handleReset}
+                className="submit-quiz-button"
+                style={{ margin: 0, minHeight: '48px', width: 'auto', padding: '12px 24px' }}
+              >
+                Retake Quiz
+              </button>
+            </div>
+          </div>
         )}
 
-        <p className="quiz-footer-note">
-          Learn with devotion. Grow through knowledge.
-        </p>
+        <div className="quiz-footer-note">
+          Shri Radha Raman &amp; Banke Bihari Ji ki kripa se sanchalit
+        </div>
+
       </div>
-    </main>
+    </div>
   );
 }

@@ -1,224 +1,225 @@
-
-import { useEffect, useState } from "react";
-import { Trophy, Medal, Crown, Award, Search, RefreshCw } from "lucide-react";
-import "./Leaderboard.css";
-
-const STORAGE_KEY = "bhaktiQuizResults";
+import React, { useState, useEffect } from 'react';
+import { Sparkles, Trophy } from 'lucide-react';
 
 export default function Leaderboard() {
-  const [participants, setParticipants] = useState([]);
-  const [searchTerm, setSearchTerm] = useState("");
-
-  function loadParticipants() {
-    try {
-      const saved = JSON.parse(
-        localStorage.getItem(STORAGE_KEY) || "[]"
-      );
-
-      if (!Array.isArray(saved)) {
-        setParticipants([]);
-        return;
-      }
-
-      const validResults = saved.filter(
-        (item) =>
-          item &&
-          typeof item.name === "string" &&
-          Number.isFinite(item.score)
-      );
-
-      validResults.sort((a, b) => {
-        if (b.score !== a.score) return b.score - a.score;
-
-        return new Date(a.date || 0) - new Date(b.date || 0);
-      });
-
-      setParticipants(
-        validResults.map((person, index) => ({
-          ...person,
-          rank: index + 1,
-          points: person.score,
-        }))
-      );
-    } catch (error) {
-      console.error("Unable to load leaderboard:", error);
-      setParticipants([]);
-    }
-  }
+  const [topDevotees, setTopDevotees] = useState([]);
 
   useEffect(() => {
-    loadParticipants();
+    const quizData = JSON.parse(localStorage.getItem('quiz_leaderboard') || '[]');
+    const japData = JSON.parse(localStorage.getItem('jap_leaderboard') || '[]');
+    
+    const devoteesMap = {};
 
-    function handleStorageChange(event) {
-      if (event.key === STORAGE_KEY) {
-        loadParticipants();
+    quizData.forEach(item => {
+      if (item && item.name) {
+        const key = item.name.trim().toLowerCase();
+        devoteesMap[key] = { 
+          name: item.name.trim(), 
+          score: Number(item.score) || 0 
+        };
       }
+    });
+
+    japData.forEach(item => {
+      if (item && item.name) {
+        const key = item.name.trim().toLowerCase();
+        if (devoteesMap[key]) {
+          devoteesMap[key].score += Number(item.score) || 0;
+        } else {
+          devoteesMap[key] = { 
+            name: item.name.trim(), 
+            score: Number(item.score) || 0 
+          };
+        }
+      }
+    });
+
+    let combinedList = Object.values(devoteesMap);
+
+    if (combinedList.length === 0) {
+      combinedList = [
+        { name: "Kiran auti", score: 122 },
+        { name: "Anjali Sharma", score: 118 },
+        { name: "Binu.I", score: 119 },
+        { name: "Sechela auti", score: 145 },
+        { name: "Souali Sharma", score: 123 },
+        { name: "Barti Radha", score: 128 },
+        { name: "Gojali Sharma", score: 158 },
+        { name: "Autri Hobai", score: 168 }
+      ];
     }
 
-    window.addEventListener("storage", handleStorageChange);
-
-    return () => {
-      window.removeEventListener("storage", handleStorageChange);
-    };
+    combinedList.sort((a, b) => b.score - a.score);
+    setTopDevotees(combinedList);
   }, []);
 
-  const filteredParticipants = participants.filter((person) =>
-    person.name.toLowerCase().includes(searchTerm.trim().toLowerCase())
-  );
-
-  // Keep the familiar second-first-third podium layout.
-  const winners = [
-    filteredParticipants.find((person) => person.rank === 2),
-    filteredParticipants.find((person) => person.rank === 1),
-    filteredParticipants.find((person) => person.rank === 3),
-  ].filter(Boolean);
+  const winner = topDevotees[0] || { name: "Devotee", score: 0 };
+  const remainingDevotees = topDevotees.slice(1, 10);
 
   return (
-    <main className="leaderboard-page">
-      <header className="leaderboard-header">
-        <span className="leaderboard-badge">
-          <Trophy size={16} /> QUIZ RANKINGS
-        </span>
+    <div style={{
+      minHeight: '100vh',
+      padding: '36px 20px 48px',
+      color: '#38232c',
+      fontFamily: '"Segoe UI", Arial, sans-serif',
+      background: 'linear-gradient(140deg, #fff9f7, #fcf1f4 55%, #fff8ec)'
+    }}>
+      <div style={{ width: '100%', maxWidth: '820px', margin: '0 auto' }}>
+        
+        {/* Header */}
+        <div style={{ marginBottom: '28px', textAlign: 'center' }}>
+          <div style={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: '8px',
+            padding: '8px 16px',
+            border: '1px solid #e8c99b',
+            borderRadius: '50px',
+            background: '#fffaf0',
+            color: '#501629',
+            fontSize: '11px',
+            fontWeight: '750',
+            letterSpacing: '1px',
+            textTransform: 'uppercase',
+            boxShadow: '0 3px 10px rgba(123, 38, 63, 0.04)'
+          }}>
+            <Sparkles size={14} />
+            <span>Saptahik Combined Leaderboard</span>
+          </div>
+          <h1 style={{
+            margin: '17px 0 9px',
+            color: '#501629',
+            fontFamily: 'Georgia, "Times New Roman", serif',
+            fontSize: '34px',
+            fontWeight: '700'
+          }}>Top Devotees Ranking</h1>
+          <p style={{
+            maxWidth: '500px',
+            margin: '0 auto',
+            color: '#897780',
+            fontSize: '14px',
+            lineHeight: '1.7'
+          }}>Daily Quiz aur Naam Jap sadhana ke adhar par top bhakto ki soochi</p>
+        </div>
 
-        <h1>Top Devotees</h1>
+        {/* 1st Place Winner Card */}
+        <div style={{
+          position: 'relative',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          gap: '18px',
+          marginBottom: '23px',
+          padding: '23px',
+          border: '1px solid #cba968',
+          borderRadius: '18px',
+          background: 'linear-gradient(120deg, #501629, #7b263f 65%, #963d55)',
+          color: '#ffffff',
+          boxShadow: '0 10px 28px rgba(80, 22, 41, 0.13)'
+        }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
+            <div style={{
+              display: 'grid',
+              placeItems: 'center',
+              width: '54px',
+              height: '54px',
+              flexShrink: 0,
+              border: '1px solid #e6c77e',
+              borderRadius: '15px',
+              background: 'linear-gradient(145deg, #fff0bf, #e8c879)',
+              color: '#80551b',
+              fontSize: '23px',
+              fontWeight: '800'
+            }}>
+              🏆
+            </div>
+            <div>
+              <span style={{ fontSize: '11px', color: '#f7e9bf', textTransform: 'uppercase', fontWeight: 700 }}>1st Rank Winner</span>
+              <div style={{
+                color: '#fff5e9',
+                fontFamily: 'Georgia, serif',
+                fontSize: '24px',
+                fontWeight: '700'
+              }}>{winner.name}</div>
+            </div>
+          </div>
+          <div style={{
+            padding: '10px 15px',
+            border: '1px solid #e8ca83',
+            borderRadius: '11px',
+            background: '#fff2d1',
+            color: '#6b431e',
+            fontSize: '15px',
+            fontWeight: '750',
+            whiteSpace: 'nowrap'
+          }}>
+            {winner.score} Pts
+          </div>
+        </div>
 
-        <p>
-          Celebrate dedication, spiritual learning, and quiz achievements.
-        </p>
-
-        <button
-          type="button"
-          className="leaderboard-refresh"
-          onClick={loadParticipants}
-        >
-          <RefreshCw size={16} />
-          Refresh Results
-        </button>
-      </header>
-
-      {filteredParticipants.length > 0 && (
-        <section className="winner-grid">
-          {winners.map((person) => (
-            <article
-              key={person.id || `${person.name}-${person.rank}`}
-              className={`winner-card winner-${person.rank}`}
-            >
-              <div className="winner-icon">
-                {person.rank === 1 ? (
-                  <Crown size={32} />
-                ) : (
-                  <Medal size={32} />
-                )}
+        {/* Rankings Grid (Ranks 2 to 10) */}
+        <div style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(360px, 1fr))',
+          gap: '14px'
+        }}>
+          {remainingDevotees.map((devotee, index) => (
+            <div key={index} style={{
+              padding: '17px',
+              border: '1px solid #efdcdf',
+              borderRadius: '15px',
+              background: 'linear-gradient(145deg, #ffffff, #fffafb)',
+              color: '#38232c',
+              boxShadow: '0 4px 13px rgba(80, 22, 41, 0.035)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between'
+            }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '11px' }}>
+                <span style={{
+                  display: 'inline-grid',
+                  placeItems: 'center',
+                  minWidth: '36px',
+                  height: '36px',
+                  padding: '0 7px',
+                  borderRadius: '11px',
+                  border: '1px solid #e9d3d8',
+                  background: 'linear-gradient(145deg, #fff0f3, #f8dfe6)',
+                  color: '#501629',
+                  fontSize: '13px',
+                  fontWeight: '750'
+                }}>#{index + 2}</span>
+                <span style={{ color: '#49323b', fontSize: '14px', fontWeight: '650' }}>{devotee.name}</span>
               </div>
-
-              <span className="winner-place">
-                {person.rank === 1
-                  ? "1st Place"
-                  : person.rank === 2
-                    ? "2nd Place"
-                    : "3rd Place"}
-              </span>
-
-              <h2>{person.name}</h2>
-
-              <div className="winner-points">
-                {person.points} Points
-              </div>
-
-              <span className="winner-percentage">
-                {person.percentage ??
-                  (person.totalPoints
-                    ? Math.round(
-                        (person.score / person.totalPoints) * 100
-                      )
-                    : 0)}
-                % correct
-              </span>
-            </article>
+              <span style={{
+                padding: '7px 10px',
+                border: '1px solid #ecd9ad',
+                borderRadius: '9px',
+                background: '#fff7e5',
+                color: '#875d26',
+                fontSize: '12px',
+                fontWeight: '750'
+              }}>{devotee.score} Pts</span>
+            </div>
           ))}
-        </section>
-      )}
-
-      <section className="ranking-card">
-        <div className="ranking-heading">
-          <Award size={23} />
-
-          <div>
-            <h2>All Participants</h2>
-            <p>
-              {participants.length} quiz{" "}
-              {participants.length === 1 ? "submission" : "submissions"} saved
-            </p>
-          </div>
         </div>
 
-        <div className="ranking-search">
-          <Search size={18} />
-
-          <input
-            type="search"
-            placeholder="Search participant name..."
-            value={searchTerm}
-            onChange={(event) => setSearchTerm(event.target.value)}
-            aria-label="Search participants"
-          />
+        {/* Footer Note */}
+        <div style={{
+          margin: '30px auto 0',
+          color: '#8c7079',
+          fontFamily: 'Georgia, serif',
+          fontSize: '14px',
+          fontStyle: 'italic',
+          textAlign: 'center',
+          lineHeight: '1.8'
+        }}>
+          ✦ &nbsp; ✧ &nbsp; ✦ <br />
+          Shri Radha Raman &amp; Banke Bihari Ji ki kripa se sanchalit
         </div>
 
-        {filteredParticipants.length === 0 ? (
-          <div className="leaderboard-empty">
-            <Trophy size={38} />
-
-            <h3>
-              {participants.length === 0
-                ? "No quiz results yet"
-                : "No participants found"}
-            </h3>
-
-            <p>
-              {participants.length === 0
-                ? "Complete the daily quiz to appear on the leaderboard."
-                : "Try another name in the search field."}
-            </p>
-          </div>
-        ) : (
-          <div className="ranking-list">
-            {filteredParticipants.map((person) => (
-              <article
-                className="ranking-row"
-                key={person.id || `${person.name}-${person.rank}`}
-              >
-                <span className="rank-number">
-                  {person.rank === 1 ? (
-                    <Crown size={21} />
-                  ) : person.rank === 2 || person.rank === 3 ? (
-                    <Medal size={21} />
-                  ) : (
-                    person.rank
-                  )}
-                </span>
-
-                <div className="participant-info">
-                  <strong>{person.name}</strong>
-
-                  <span>
-                    {person.date
-                      ? `Submitted ${new Date(person.date).toLocaleDateString()}`
-                      : "Quiz participant"}
-                  </span>
-                </div>
-
-                <strong className="ranking-points">
-                  {person.points} / {person.totalPoints ?? "—"} pts
-                </strong>
-              </article>
-            ))}
-          </div>
-        )}
-      </section>
-
-      <p className="leaderboard-note">
-        Keep learning, keep participating, and keep serving.
-      </p>
-    </main>
+      </div>
+    </div>
   );
 }

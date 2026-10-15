@@ -1,9 +1,14 @@
+
 import React, { useState, useEffect } from 'react';
-import { Heart, RotateCcw, Volume2, VolumeX, Sparkles, Award, CheckCircle2 } from 'lucide-react';
+import { Heart, RotateCcw, Volume2, VolumeX, Sparkles, User } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import './NaamJap.css';
 
 export default function NaamJap() {
-  // State variables for counting, malas, and persistence
+  const [userName, setUserName] = useState(() => {
+    return localStorage.getItem('bhakti_jap_username') || '';
+  });
+
   const [count, setCount] = useState(() => {
     const saved = localStorage.getItem('bhakti_jap_count');
     return saved ? parseInt(saved, 10) : 0;
@@ -16,27 +21,46 @@ export default function NaamJap() {
 
   const [isAudioPlaying, setIsAudioPlaying] = useState(false);
   const [showResetConfirm, setShowResetConfirm] = useState(false);
-  const [lastAction, setLastAction] = useState(null); // For undo functionality
+  const [lastAction, setLastAction] = useState(null);
 
-  // Calculations for Mala (108 beads)
   const currentMalaBeads = count % 108;
   const completedMalas = Math.floor(count / 108);
   const progressPercentage = (currentMalaBeads / 108) * 100;
 
-  // Save progress to localStorage
+  // Progressive rule: Har 11 malas ke set par 110 points add honge
+  const multiplier = Math.floor(completedMalas / 11);
+  const calculatedPoints = multiplier * 110;
+
   useEffect(() => {
     localStorage.setItem('bhakti_jap_count', count.toString());
     localStorage.setItem('bhakti_total_lifetime', totalLifetime.toString());
-  }, [count, totalLifetime]);
+    localStorage.setItem('bhakti_jap_username', userName);
 
-  // Handle Jap Increment (+1)
+    if (userName.trim() && calculatedPoints > 0) {
+      const existingLeaderboard = JSON.parse(localStorage.getItem('jap_leaderboard') || '[]');
+      
+      const userIndex = existingLeaderboard.findIndex(item => item.name.toLowerCase() === userName.toLowerCase());
+      if (userIndex !== -1) {
+        existingLeaderboard[userIndex].score = calculatedPoints;
+      } else {
+        existingLeaderboard.push({ name: userName, score: calculatedPoints });
+      }
+
+      existingLeaderboard.sort((a, b) => b.score - a.score);
+      localStorage.setItem('jap_leaderboard', JSON.stringify(existingLeaderboard));
+    }
+  }, [count, totalLifetime, userName, calculatedPoints]);
+
   const handleJap = () => {
+    if (!userName.trim()) {
+      alert("Kripya Jap karne se pehle apna Naam (Devotee Name) darj karein!");
+      return;
+    }
     setLastAction(count);
     setCount(prev => prev + 1);
     setTotalLifetime(prev => prev + 1);
   };
 
-  // Handle Undo Last Count
   const handleUndo = () => {
     if (lastAction !== null) {
       setCount(lastAction);
@@ -45,7 +69,6 @@ export default function NaamJap() {
     }
   };
 
-  // Handle Reset with confirmation
   const handleResetConfirm = () => {
     setCount(0);
     setLastAction(null);
@@ -53,110 +76,117 @@ export default function NaamJap() {
   };
 
   return (
-    <div className="bg-gradient-to-b from-spiritual-cream via-spiritual-pink/15 to-spiritual-cream min-h-screen py-10 px-4 sm:px-6 lg:px-8 text-spiritual-darkMaroon flex flex-col items-center">
+    <div className="jap-page">
       
-      {/* Header Banner */}
-      <div className="max-w-xl w-full text-center space-y-3 mb-8">
-        <span className="bg-spiritual-saffron/10 text-spiritual-saffron text-xs font-bold px-4 py-1.5 rounded-full uppercase tracking-wider border border-spiritual-saffron/30 inline-flex items-center space-x-1.5">
+      <div className="jap-header">
+        <div className="jap-badge">
           <Sparkles size={14} />
           <span>Nitya Naam Jap Sadhana</span>
-        </span>
-        <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight">
-          श्री राधा रानी & कृष्ण जाप
-        </h1>
-        <p className="text-gray-600 text-sm">
-          "राधे राधे" स्मरण से man ko shanti aur aatma ko pavitrata milti hai.
-        </p>
+        </div>
+        <h1>Shri Radha Rani &amp; Krishn Jap</h1>
+        <p>"Radhe Radhe" smaran. (11 Malas = 110 Pts, 22 Malas = 220 Pts, etc.)</p>
       </div>
 
-      {/* Main Counter Dashboard Container */}
-      <div className="max-w-md w-full bg-white/90 backdrop-blur-md p-6 sm:p-8 rounded-3xl shadow-lg border border-spiritual-golden/30 space-y-6 relative overflow-hidden">
+      <div className="jap-container">
         
-        {/* Top Control Bar (Audio & Reset) */}
-        <div className="flex justify-between items-center text-xs font-medium text-gray-500">
+        {/* Name Input */}
+        <div className="jap-input-group">
+          <label>
+            <User size={14} />
+            <span>Aapka Naam (Devotee Name) *</span>
+          </label>
+          <input 
+            type="text"
+            value={userName}
+            onChange={(e) => setUserName(e.target.value)}
+            placeholder="Apna poora naam likhein..."
+          />
+        </div>
+
+        {/* Audio & Reset Bar */}
+        <div className="jap-controls-bar">
           <button 
             onClick={() => setIsAudioPlaying(!isAudioPlaying)}
-            className="flex items-center space-x-1 bg-spiritual-cream hover:bg-spiritual-saffron/10 px-3 py-1.5 rounded-full border border-spiritual-golden/30 transition text-spiritual-darkMaroon"
-            title={isAudioPlaying ? "Mute Bell/Flute Sound" : "Unmute Sound"}
+            className="jap-control-btn"
           >
-            {isAudioPlaying ? <Volume2 size={16} className="text-spiritual-saffron" /> : <VolumeX size={16} />}
+            {isAudioPlaying ? <Volume2 size={15} style={{ color: '#C6A15B' }} /> : <VolumeX size={15} />}
             <span>{isAudioPlaying ? "Audio Enabled" : "Audio Muted"}</span>
           </button>
 
           <button 
             onClick={() => setShowResetConfirm(true)}
-            className="flex items-center space-x-1 text-red-500 hover:text-red-700 bg-red-50 px-3 py-1.5 rounded-full transition"
+            className="jap-control-btn reset"
           >
             <RotateCcw size={14} />
             <span>Reset Counter</span>
           </button>
         </div>
 
-        {/* Mala Progress Bar */}
-        <div className="space-y-2">
-          <div className="flex justify-between text-xs font-bold text-spiritual-darkMaroon">
-            <span>Mala Progress: {currentMalaBeads} / 108</span>
-            <span className="text-spiritual-saffron">Completed Malas: {completedMalas}</span>
+        {/* Mala Progress */}
+        <div className="jap-progress-box">
+          <div className="jap-progress-info">
+            <span>Mala Beads: {currentMalaBeads} / 108</span>
+            <span>Completed Malas: {completedMalas}</span>
           </div>
-          <div className="w-full bg-spiritual-cream h-3 rounded-full overflow-hidden border border-spiritual-golden/20 p-0.5 shadow-inner">
+          <div className="jap-progress-bar-bg">
             <div 
-              className="bg-gradient-to-r from-spiritual-saffron to-spiritual-golden h-full rounded-full transition-all duration-300"
+              className="jap-progress-bar-fill"
               style={{ width: `${progressPercentage}%` }}
             ></div>
           </div>
         </div>
 
-        {/* Main Counter Display */}
-        <div className="text-center py-6 bg-gradient-to-b from-spiritual-cream/60 to-white rounded-2xl border border-spiritual-golden/20 shadow-inner space-y-2">
-          <span className="text-xs uppercase tracking-widest font-semibold text-gray-400">Total Jap in Current Session</span>
-          <div className="text-6xl sm:text-7xl font-black text-spiritual-saffron tracking-tight">
+        {/* Counter Display */}
+        <div className="jap-counter-display">
+          <span className="jap-counter-label">Total Jap in Current Session</span>
+          <div className="jap-counter-number">
             {count}
           </div>
-          <p className="text-xs text-spiritual-darkMaroon font-medium italic">
-            "राधे राधे" 📿
+          <p className="jap-points-text">
+             Points: <strong>{calculatedPoints} Pts</strong> ({completedMalas} Malas)
           </p>
         </div>
 
-        {/* Large Interactive "श्री राधा" Button */}
-        <div className="flex justify-center pt-2">
+        {/* Tap Button */}
+        <div className="jap-tap-wrapper">
           <motion.button
-            whileTap={{ scale: 0.93 }}
-            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.92 }}
+            whileHover={{ scale: 1.03 }}
             onClick={handleJap}
-            className="w-36 h-36 sm:w-44 sm:h-44 rounded-full bg-gradient-to-br from-spiritual-saffron via-amber-500 to-spiritual-golden text-white font-extrabold text-2xl sm:text-3xl shadow-xl border-4 border-spiritual-cream flex flex-col items-center justify-center space-y-1 focus:outline-none focus:ring-4 focus:ring-spiritual-saffron/40 transition-shadow"
+            className="jap-tap-button"
           >
-            <Heart size={28} className="fill-white/20 animate-pulse" />
+            <Heart size={24} className="fill-white/20 animate-pulse" />
             <span>श्री राधा</span>
-            <span className="text-xs font-normal tracking-wide opacity-90">Tap to Count</span>
+            <span className="jap-tap-subtext">Tap to Count</span>
           </motion.button>
         </div>
 
-        {/* Secondary Controls (+1 & Undo) */}
-        <div className="flex gap-3 pt-2">
+        {/* Action Buttons */}
+        <div className="jap-action-buttons">
           <button
             onClick={handleUndo}
             disabled={lastAction === null}
-            className={`flex-1 py-2.5 rounded-xl border text-sm font-semibold transition ${lastAction !== null ? 'bg-white border-gray-300 text-gray-700 hover:bg-gray-50' : 'bg-gray-100 border-transparent text-gray-400 cursor-not-allowed'}`}
+            className="jap-action-btn"
           >
             Undo Last
           </button>
-          <button
-            onClick={handleJap}
-            className="flex-1 bg-spiritual-darkMaroon text-spiritual-cream hover:bg-spiritual-sension py-2.5 rounded-xl text-sm font-semibold shadow transition"
+          <a
+            href="/leaderboard"
+            className="jap-action-btn primary"
           >
-            1
-          </button>
+            View Leaderboard →
+          </a>
         </div>
 
-        {/* Statistics Footer */}
-        <div className="border-t border-gray-100 pt-4 grid grid-cols-2 gap-4 text-center">
-          <div className="bg-spiritual-cream/50 p-3 rounded-xl border border-spiritual-golden/10">
-            <span className="text-xs text-gray-500 block">Completed Malas</span>
-            <span className="text-lg font-bold text-spiritual-darkMaroon">{completedMalas}</span>
+        {/* Stats Footer */}
+        <div className="jap-stats-grid">
+          <div className="jap-stat-card">
+            <span className="jap-stat-label">Completed Malas</span>
+            <span className="jap-stat-value">{completedMalas}</span>
           </div>
-          <div className="bg-spiritual-cream/50 p-3 rounded-xl border border-spiritual-golden/10">
-            <span className="text-xs text-gray-500 block">Lifetime Jap</span>
-            <span className="text-lg font-bold text-spiritual-saffron">{totalLifetime}</span>
+          <div className="jap-stat-card">
+            <span className="jap-stat-label">Lifetime Jap</span>
+            <span className="jap-stat-value">{totalLifetime}</span>
           </div>
         </div>
 
@@ -165,27 +195,27 @@ export default function NaamJap() {
       {/* Reset Confirmation Modal */}
       <AnimatePresence>
         {showResetConfirm && (
-          <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+          <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px', zIndex: 50 }}>
             <motion.div 
               initial={{ scale: 0.9, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.9, opacity: 0 }}
-              className="bg-white max-w-sm w-full p-6 rounded-2xl shadow-xl border border-spiritual-golden/30 text-center space-y-4"
+              style={{ background: '#FFFFFF', maxWidth: '360px', width: '100%', padding: '24px', borderRadius: '18px', border: '2px solid #C6A15B', textAlign: 'center' }}
             >
-              <h3 className="text-lg font-bold text-spiritual-darkMaroon">Counter Reset Karein?</h3>
-              <p className="text-xs text-gray-600">
+              <h3 style={{ color: '#641E2B', fontSize: '18px', fontWeight: 'bold', marginBottom: '8px' }}>Counter Reset Karein?</h3>
+              <p style={{ color: '#7A655C', fontSize: '13px', marginBottom: '20px' }}>
                 Kya aap apne current session ka counter zero (0) karna chahte hain?
               </p>
-              <div className="flex gap-3 pt-2">
+              <div style={{ display: 'flex', gap: '10px' }}>
                 <button
                   onClick={() => setShowResetConfirm(false)}
-                  className="flex-1 bg-gray-100 text-gray-700 py-2.5 rounded-xl font-medium hover:bg-gray-200 transition text-sm"
+                  style={{ flex: 1, padding: '10px', background: '#F5F5F5', border: 'none', borderRadius: '10px', fontWeight: 'bold', cursor: 'pointer' }}
                 >
                   Cancel
                 </button>
                 <button
                   onClick={handleResetConfirm}
-                  className="flex-1 bg-red-600 text-white py-2.5 rounded-xl font-medium hover:bg-red-700 transition text-sm shadow"
+                  style={{ flex: 1, padding: '10px', background: '#DC3545', color: '#FFF', border: 'none', borderRadius: '10px', fontWeight: 'bold', cursor: 'pointer' }}
                 >
                   Confirm Reset
                 </button>
