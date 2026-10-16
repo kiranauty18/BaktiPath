@@ -39,7 +39,7 @@ export default function Navbar() {
             <span className="brand-fallback-om">ॐ</span>
           </div>
           <div className="site-brand-text">
-            <strong>Bhakti Seva Dham</strong>
+            <strong>राधाकृष्ण भक्तिमार्ग</strong>
             <small>Shri Radha Raman &amp; Banke Bihari Seva</small>
           </div>
         </Link>
@@ -78,12 +78,12 @@ export default function Navbar() {
               </NavLink>
 
               <NavLink
-                to="/katha"
+                to="/bhajans"
                 className={({ isActive }) =>
                   `site-nav-link ${isActive ? "nav-active" : ""}`
                 }
               >
-                Katha &amp; Bhajans
+                Bhajans &amp; Mantras
               </NavLink>
 
               <NavLink
@@ -126,6 +126,15 @@ export default function Navbar() {
                 }
               >
                 Leaderboard
+              </NavLink>
+
+              <NavLink
+                to="/bhajans"
+                className={({ isActive }) =>
+                  `site-nav-link ${isActive ? "nav-active" : ""}`
+                }
+              >
+                Bhajans Gallery
               </NavLink>
             </>
           )}
@@ -221,8 +230,12 @@ export default function Navbar() {
               >
                 Leaderboard
               </NavLink>
-              <NavLink to="/katha" onClick={closeMenu} className="drawer-link">
-                Katha &amp; Bhajans
+              <NavLink
+                to="/bhajans"
+                onClick={closeMenu}
+                className="drawer-link"
+              >
+                Bhajans &amp; Mantras
               </NavLink>
               <NavLink to="/jap" onClick={closeMenu} className="drawer-link">
                 Naam Jap
@@ -245,6 +258,13 @@ export default function Navbar() {
                 className="drawer-link"
               >
                 Leaderboard
+              </NavLink>
+              <NavLink
+                to="/bhajans"
+                onClick={closeMenu}
+                className="drawer-link"
+              >
+                Bhajans Gallery
               </NavLink>
               <NavLink
                 to="/profile"

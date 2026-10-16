@@ -1,268 +1,610 @@
 import React, { useState, useEffect } from "react";
-import { useAuth } from "../context/AuthContext";
-import { adminAPI } from "../api/api";
 import {
-  ShieldAlert,
-  Users,
-  Award,
-  Heart,
-  PlusCircle,
   Calendar,
+  BookOpen,
+  Video,
+  Plus,
+  Trash2,
+  Save,
+  CheckCircle2,
+  AlertCircle,
+  HelpCircle,
   Sparkles,
 } from "lucide-react";
+import { useAuth } from "../context/AuthContext";
 import "./AdminDashboard.css";
 
 export default function AdminDashboard() {
   const { devotee } = useAuth();
-  const [stats, setStats] = useState(null);
-  const [devotees, setDevotees] = useState([]);
-  const [activeTab, setActiveTab] = useState("overview"); // "overview" | "questions"
+  const [activeTab, setActiveTab] = useState("katha"); // 'katha' | 'bhajans'
 
-  // Target Date State (Defaults to Today in YYYY-MM-DD)
-  const todayString = new Date().toISOString().split("T")[0];
-  const [scheduledDate, setScheduledDate] = useState(todayString);
+  const todayStr = new Date().toISOString().split("T")[0];
+  const maxDateObj = new Date();
+  maxDateObj.setDate(maxDateObj.getDate() + 30);
+  const maxDateStr = maxDateObj.toISOString().split("T")[0];
 
-  // Question Form State
-  const [questionText, setQuestionText] = useState("");
-  const [options, setOptions] = useState(["", "", "", ""]);
-  const [correctIndex, setCorrectIndex] = useState(0);
-  const [statusMsg, setStatusMsg] = useState("");
+  // ---------------- KATHA STATE ----------------
+  const [scheduledDate, setScheduledDate] = useState(todayStr);
+  const [kathaTitle, setKathaTitle] = useState("");
+  const [kathaContent, setKathaContent] = useState("");
+  const [mediaUrl, setMediaUrl] = useState("");
 
-  useEffect(() => {
-    const loadAdminData = async () => {
-      try {
-        const statsRes = await adminAPI.getStats();
-        if (statsRes.success) setStats(statsRes.stats);
+  const [questions, setQuestions] = useState(
+    Array.from({ length: 5 }, () => ({
+      question: "",
+      options: ["", "", "", ""],
+      correctIndex: 0,
+      explanation: "",
+    })),
+  );
 
-        const devoteesRes = await adminAPI.getDevotees();
-        if (devoteesRes.success) setDevotees(devoteesRes.devotees);
-      } catch (err) {
-        console.error("Admin data fetch error:", err);
-      }
-    };
-    loadAdminData();
-  }, []);
+  const [kathaSubmitting, setKathaSubmitting] = useState(false);
+  const [kathaMsg, setKathaMsg] = useState({ type: "", text: "" });
 
-  const handleOptionChange = (idx, val) => {
-    const updated = [...options];
-    updated[idx] = val;
-    setOptions(updated);
+  // ---------------- BHAJAN STATE ----------------
+  const [bhajans, setBhajans] = useState([]);
+  const [videoTitle, setVideoTitle] = useState("");
+  const [youtubeUrl, setYoutubeUrl] = useState("");
+  const [videoCategory, setVideoCategory] = useState("Bhajan");
+  const [bhajanSubmitting, setBhajanSubmitting] = useState(false);
+  const [bhajanMsg, setBhajanMsg] = useState({ type: "", text: "" });
+
+  const getToken = () => {
+    const storedUser = localStorage.getItem("bhakti_devotee");
+    return devotee?.token || (storedUser ? JSON.parse(storedUser).token : null);
   };
 
-  const handleAddQuestion = async (e) => {
-    e.preventDefault();
+  const fetchBhajans = async () => {
     try {
-      const res = await adminAPI.addQuestion({
-        question: questionText,
-        options,
-        correctIndex: Number(correctIndex),
-        scheduledDate, // Sends the selected calendar date
-      });
-
-      if (res.success) {
-        setStatusMsg(
-          `✅ Prashna safalta-purvak ${scheduledDate} ke liye schedule ho gaya!`,
-        );
-        setQuestionText("");
-        setOptions(["", "", "", ""]);
-        setCorrectIndex(0);
-      } else {
-        setStatusMsg(`❌ Error: ${res.message}`);
+      const res = await fetch("http://localhost:5000/api/bhajans");
+      const data = await res.json();
+      if (data.success) {
+        setBhajans(data.bhajans || []);
       }
-    } catch {
-      setStatusMsg("❌ Prashna schedule karne me samasya aayi.");
+    } catch (err) {
+      console.error("Failed to load bhajans:", err);
     }
   };
 
-  if (devotee?.role !== "admin") {
-    return (
-      <div className="admin-access-denied">
-        <ShieldAlert size={48} color="#b91c1c" />
-        <h2>Access Restricted</h2>
-        <p>
-          Yeh section keval mandir prabandhak (Admin) ke liye surakshit hai.
-        </p>
-      </div>
-    );
-  }
+  useEffect(() => {
+    fetchBhajans();
+  }, []);
+
+  // ---------------- DYNAMIC QUESTION HANDLERS ----------------
+  const handleAddQuestion = () => {
+    setQuestions((prev) => [
+      ...prev,
+      {
+        question: "",
+        options: ["", "", "", ""],
+        correctIndex: 0,
+        explanation: "",
+      },
+    ]);
+  };
+
+  const handleRemoveQuestion = (indexToRemove) => {
+    if (questions.length <= 1) {
+      alert("Kam se kam ek (1) prashna hona zaroori hai!");
+      return;
+    }
+    setQuestions((prev) => prev.filter((_, idx) => idx !== indexToRemove));
+  };
+
+  const handleQuestionTextChange = (qIndex, text) => {
+    const updated = [...questions];
+    updated[qIndex].question = text;
+    setQuestions(updated);
+  };
+
+  const handleOptionChange = (qIndex, optIndex, val) => {
+    const updated = [...questions];
+    updated[qIndex].options[optIndex] = val;
+    setQuestions(updated);
+  };
+
+  const handleCorrectIndexChange = (qIndex, val) => {
+    const updated = [...questions];
+    updated[qIndex].correctIndex = Number(val);
+    setQuestions(updated);
+  };
+
+  const handleExplanationChange = (qIndex, val) => {
+    const updated = [...questions];
+    updated[qIndex].explanation = val;
+    setQuestions(updated);
+  };
+
+  const handleKathaSubmit = async (e) => {
+    e.preventDefault();
+    setKathaMsg({ type: "", text: "" });
+
+    if (questions.length === 0) {
+      setKathaMsg({
+        type: "error",
+        text: "Kam se kam 1 prashna hona anivarya hai!",
+      });
+      return;
+    }
+
+    for (let i = 0; i < questions.length; i++) {
+      if (!questions[i].question.trim()) {
+        setKathaMsg({
+          type: "error",
+          text: `Prashna #${i + 1} ka prashna text khali hai!`,
+        });
+        return;
+      }
+      for (let j = 0; j < 4; j++) {
+        if (!questions[i].options[j].trim()) {
+          setKathaMsg({
+            type: "error",
+            text: `Prashna #${i + 1} ka Vikalp ${String.fromCharCode(65 + j)} khali hai!`,
+          });
+          return;
+        }
+      }
+    }
+
+    try {
+      setKathaSubmitting(true);
+      const res = await fetch("http://localhost:5000/api/quiz/admin/katha", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${getToken()}`,
+        },
+        body: JSON.stringify({
+          title: kathaTitle,
+          content: kathaContent,
+          mediaUrl,
+          scheduledDate,
+          questions,
+        }),
+      });
+
+      const data = await res.json();
+      if (data.success) {
+        setKathaMsg({
+          type: "success",
+          text: `Katha aur ${questions.length} prashna din ${scheduledDate} ke liye schedule ho gaye (Total: 100 Pts)!`,
+        });
+      } else {
+        setKathaMsg({
+          type: "error",
+          text: data.message || "Katha schedule karne me truti aayi.",
+        });
+      }
+    } catch (err) {
+      setKathaMsg({
+        type: "error",
+        text: "Server se sampark nahi ho saka.",
+      });
+    } finally {
+      setKathaSubmitting(false);
+    }
+  };
+
+  // ---------------- BHAJAN HANDLERS ----------------
+  const handleAddBhajan = async (e) => {
+    e.preventDefault();
+    setBhajanMsg({ type: "", text: "" });
+
+    if (bhajans.length >= 10) {
+      setBhajanMsg({
+        type: "error",
+        text: "Adhiktam 10 videos ki seema poori ho chuki hai. Pehle ek delete karein.",
+      });
+      return;
+    }
+
+    try {
+      setBhajanSubmitting(true);
+      const res = await fetch("http://localhost:5000/api/bhajans/admin", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${getToken()}`,
+        },
+        body: JSON.stringify({
+          title: videoTitle,
+          youtubeUrl,
+          category: videoCategory,
+        }),
+      });
+
+      const data = await res.json();
+      if (data.success) {
+        setBhajanMsg({ type: "success", text: "Video safalpurvak jud gaya!" });
+        setVideoTitle("");
+        setYoutubeUrl("");
+        fetchBhajans();
+      } else {
+        setBhajanMsg({
+          type: "error",
+          text: data.message || "Video jodne me samasya aayi.",
+        });
+      }
+    } catch (err) {
+      setBhajanMsg({ type: "error", text: "Server se sampark nahi ho saka." });
+    } finally {
+      setBhajanSubmitting(false);
+    }
+  };
+
+  const handleDeleteBhajan = async (id) => {
+    if (!window.confirm("Kya aap sach me ye video hatana chahte hain?")) return;
+    try {
+      const res = await fetch(`http://localhost:5000/api/bhajans/admin/${id}`, {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${getToken()}`,
+        },
+      });
+      const data = await res.json();
+      if (data.success) {
+        setBhajanMsg({
+          type: "success",
+          text: "Video safalta purvak hataya gaya!",
+        });
+        fetchBhajans();
+      } else {
+        alert(data.message || "Video delete karne me samasya aayi.");
+      }
+    } catch (err) {
+      alert("Server error");
+    }
+  };
+
+  const pointsPerQuestion =
+    questions.length > 0 ? (100 / questions.length).toFixed(1) : 0;
 
   return (
     <div className="admin-page">
       <div className="admin-container">
-        {/* Header */}
         <header className="admin-header">
-          <div className="admin-badge">
-            <Sparkles size={14} /> DHAM PRABHANDHAK (ADMIN)
-          </div>
-          <h1>Mandir Seva Control Center</h1>
+          <span className="admin-badge">
+            <Sparkles size={13} /> ONLINE SEVA ADMIN
+          </span>
+          <h1>Admin Management Console</h1>
           <p>
-            Naye prashna jodein, devotees ki sadhana aur seva metrics ko monitor
-            karein.
+            Nitya Katha, Dynamic Prashna Quiz aur Bhajans/Mantras video pipeline
+            yahan se sanchalit karein.
           </p>
 
           <div className="admin-tabs">
             <button
               type="button"
-              className={activeTab === "overview" ? "active" : ""}
-              onClick={() => setActiveTab("overview")}
+              className={`admin-tab-btn ${activeTab === "katha" ? "active" : ""}`}
+              onClick={() => setActiveTab("katha")}
             >
-              Overview &amp; Devotee Stats
+              <BookOpen size={15} />
+              <span>Nitya Katha &amp; Quiz ({questions.length} Prashna)</span>
             </button>
             <button
               type="button"
-              className={activeTab === "questions" ? "active" : ""}
-              onClick={() => setActiveTab("questions")}
+              className={`admin-tab-btn ${activeTab === "bhajans" ? "active" : ""}`}
+              onClick={() => setActiveTab("bhajans")}
             >
-              Add Quiz Questions
+              <Video size={15} />
+              <span>Bhajans &amp; Mantras ({bhajans.length}/10)</span>
             </button>
           </div>
         </header>
 
-        {activeTab === "overview" ? (
-          <>
-            {/* Quick Metrics */}
-            <div className="admin-metrics-grid">
-              <div className="admin-stat-card">
-                <Users size={20} className="icon-gold" />
-                <span>Total Devotees</span>
-                <strong>{stats?.totalDevotees || 0}</strong>
-              </div>
-              <div className="admin-stat-card">
-                <span className="text-xl">📿</span>
-                <span>Total Malas Completed</span>
-                <strong>{stats?.totalMalas || 0}</strong>
-              </div>
-              <div className="admin-stat-card">
-                <Award size={20} className="icon-purple" />
-                <span>Quiz Questions Active</span>
-                <strong>{stats?.questionsCount || 0}</strong>
-              </div>
-              <div className="admin-stat-card">
-                <Heart size={20} className="icon-green" />
-                <span>Total Seva Pledges</span>
-                <strong>₹{stats?.totalSevaPledged || 0}</strong>
-              </div>
+        {/* ----------------- TAB 1: KATHA & QUESTIONS ----------------- */}
+        {activeTab === "katha" && (
+          <form onSubmit={handleKathaSubmit} className="admin-form-card">
+            <div className="section-title-strip">
+              <h2>Schedule Daily Katha &amp; Prashnotari</h2>
+              <span className="info-chip">
+                Advance scheduling: Agle 30 dino tak uplabdh
+              </span>
             </div>
 
-            {/* Devotee Leaderboard Monitor */}
-            <div className="admin-table-card">
-              <h2>Devotee Activity &amp; Sadhana Log</h2>
-              <table className="admin-table">
-                <thead>
-                  <tr>
-                    <th>Devotee Name</th>
-                    <th>Email</th>
-                    <th>Malas</th>
-                    <th>Lifetime Beads</th>
-                    <th>Quiz Pts</th>
-                    <th>Role</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {devotees.map((d) => (
-                    <tr key={d._id}>
-                      <td className="font-bold">{d.name}</td>
-                      <td>{d.email}</td>
-                      <td>{d.completedMalas || 0}</td>
-                      <td>{d.lifetimeJap || 0}</td>
-                      <td>{d.quizScore || 0}</td>
-                      <td>
-                        <span className={`role-tag ${d.role}`}>{d.role}</span>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </>
-        ) : (
-          /* Add Question Form */
-          <div className="admin-card form-card">
-            <h2>
-              <PlusCircle size={20} /> Naya Quiz Prashna Jodein
-            </h2>
-            {statusMsg && <p className="status-banner">{statusMsg}</p>}
+            {kathaMsg.text && (
+              <div
+                className={`admin-alert ${kathaMsg.type === "error" ? "alert-error" : "alert-success"}`}
+              >
+                {kathaMsg.type === "error" ? (
+                  <AlertCircle size={18} />
+                ) : (
+                  <CheckCircle2 size={18} />
+                )}
+                <span>{kathaMsg.text}</span>
+              </div>
+            )}
 
-            <form onSubmit={handleAddQuestion}>
-              {/* Date Picker Input */}
-              <div className="form-group" style={{ marginBottom: "18px" }}>
-                <label
-                  style={{
-                    fontWeight: 700,
-                    color: "#4a0e17",
-                    display: "flex",
-                    alignItems: "center",
-                    gap: "6px",
-                  }}
-                >
-                  <Calendar size={16} color="#d4af37" />
-                  Target Quiz Date (Kiski Date ke liye Prashna Schedule karna
-                  hai?)
+            <div className="form-grid-top">
+              <div className="form-group">
+                <label>
+                  <Calendar size={15} /> Scheduled Date
                 </label>
                 <input
                   type="date"
                   value={scheduledDate}
+                  min={todayStr}
+                  max={maxDateStr}
                   onChange={(e) => setScheduledDate(e.target.value)}
                   required
-                  style={{
-                    padding: "10px 14px",
-                    borderRadius: "8px",
-                    border: "1.5px solid #d4af37",
-                    background: "#fffdf9",
-                    fontWeight: "600",
-                    color: "#4a0e17",
-                    maxWidth: "240px",
-                  }}
                 />
-                <small style={{ color: "#8c5825", marginTop: "4px" }}>
-                  Chuni hui tareekh (Date) ko hi yeh prashna devotees ke samne
-                  aayega.
-                </small>
               </div>
 
               <div className="form-group">
-                <label>Prashna (Question Text)</label>
+                <label>Katha Ka Shirshak (Title)</label>
                 <input
                   type="text"
-                  value={questionText}
-                  onChange={(e) => setQuestionText(e.target.value)}
-                  placeholder="Jaise: Shri Radha Raman Ji ka prakatya kiske dwara hua?"
+                  placeholder="Jaise: Shri Radha Raman Ji Ke Prakatya Ki Katha"
+                  value={kathaTitle}
+                  onChange={(e) => setKathaTitle(e.target.value)}
                   required
                 />
               </div>
 
-              <div className="options-input-grid">
-                {options.map((opt, i) => (
-                  <div key={i} className="form-group">
-                    <label>Option {String.fromCharCode(65 + i)}</label>
+              <div className="form-group full-width">
+                <label>Media / Audio Recitation Link (Optional)</label>
+                <input
+                  type="url"
+                  placeholder="https://... (SoundCloud, Drive ya YouTube recitation audio link)"
+                  value={mediaUrl}
+                  onChange={(e) => setMediaUrl(e.target.value)}
+                />
+              </div>
+
+              <div className="form-group full-width">
+                <label>Pavitra Katha Path (Story Text)</label>
+                <textarea
+                  rows={5}
+                  placeholder="Katha ka purna vivaran yahan darj karein jise bhakt padhenge..."
+                  value={kathaContent}
+                  onChange={(e) => setKathaContent(e.target.value)}
+                  required
+                />
+              </div>
+            </div>
+
+            {/* Questions Header Strip */}
+            <div className="questions-builder-strip">
+              <div className="q-strip-content">
+                <div>
+                  <h3>
+                    <HelpCircle size={17} /> Katha Prashnotari (
+                    {questions.length} Prashna)
+                  </h3>
+                  <p>
+                    Har prashna ≈ <strong>{pointsPerQuestion} Pts</strong>{" "}
+                    (Total Normalized: 100 Pts).
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  onClick={handleAddQuestion}
+                  className="add-q-btn"
+                >
+                  <Plus size={15} /> Naya Prashna Jodein
+                </button>
+              </div>
+            </div>
+
+            {/* Question Cards Stack */}
+            <div className="questions-stack">
+              {questions.map((q, qIdx) => (
+                <div key={qIdx} className="question-admin-card">
+                  <div className="q-card-header">
+                    <span className="q-badge">Prashna #{qIdx + 1}</span>
+                    <div className="q-header-right">
+                      <span className="q-points">
+                        ≈ {pointsPerQuestion} Pts
+                      </span>
+                      {questions.length > 1 && (
+                        <button
+                          type="button"
+                          onClick={() => handleRemoveQuestion(qIdx)}
+                          className="q-delete-btn"
+                          title="Is prashna ko hatayein"
+                        >
+                          <Trash2 size={13} />
+                        </button>
+                      )}
+                    </div>
+                  </div>
+
+                  <input
+                    type="text"
+                    className="q-input-title"
+                    placeholder={`Prashna #${qIdx + 1} ka text likhein...`}
+                    value={q.question}
+                    onChange={(e) =>
+                      handleQuestionTextChange(qIdx, e.target.value)
+                    }
+                    required
+                  />
+
+                  <div className="options-admin-grid">
+                    {q.options.map((opt, optIdx) => {
+                      const letter = String.fromCharCode(65 + optIdx);
+                      return (
+                        <div key={optIdx} className="opt-admin-field">
+                          <span className="opt-letter">{letter}</span>
+                          <input
+                            type="text"
+                            placeholder={`Vikalp ${letter}`}
+                            value={opt}
+                            onChange={(e) =>
+                              handleOptionChange(qIdx, optIdx, e.target.value)
+                            }
+                            required
+                          />
+                        </div>
+                      );
+                    })}
+                  </div>
+
+                  <div className="correct-answer-row">
+                    <label>Sahi Uttar:</label>
+                    <select
+                      value={q.correctIndex}
+                      onChange={(e) =>
+                        handleCorrectIndexChange(qIdx, e.target.value)
+                      }
+                    >
+                      <option value={0}>Option A</option>
+                      <option value={1}>Option B</option>
+                      <option value={2}>Option C</option>
+                      <option value={3}>Option D</option>
+                    </select>
+
                     <input
                       type="text"
-                      value={opt}
-                      onChange={(e) => handleOptionChange(i, e.target.value)}
-                      placeholder={`Option ${String.fromCharCode(65 + i)}`}
-                      required
+                      className="explanation-input"
+                      placeholder="Spashtikaran / Explanation (Optional)"
+                      value={q.explanation}
+                      onChange={(e) =>
+                        handleExplanationChange(qIdx, e.target.value)
+                      }
                     />
                   </div>
-                ))}
+                </div>
+              ))}
+            </div>
+
+            <button
+              type="submit"
+              disabled={kathaSubmitting}
+              className="admin-submit-btn"
+            >
+              <Save size={18} />
+              <span>
+                {kathaSubmitting
+                  ? "Saving Katha..."
+                  : `Save Daily Katha & ${questions.length} Questions (100 Pts)`}
+              </span>
+            </button>
+          </form>
+        )}
+
+        {/* ----------------- TAB 2: BHAJANS & MANTRAS ----------------- */}
+        {activeTab === "bhajans" && (
+          <div className="admin-bhajan-section">
+            <div className="admin-form-card">
+              <div className="section-title-strip">
+                <h2>Add YouTube Video (Max 10 Allowed)</h2>
+                <span className="info-chip">
+                  Current Videos: {bhajans.length} / 10
+                </span>
               </div>
 
-              <div className="form-group">
-                <label>Sahi Uttar (Correct Option Index)</label>
-                <select
-                  value={correctIndex}
-                  onChange={(e) => setCorrectIndex(e.target.value)}
+              {bhajanMsg.text && (
+                <div
+                  className={`admin-alert ${bhajanMsg.type === "error" ? "alert-error" : "alert-success"}`}
                 >
-                  <option value={0}>Option A</option>
-                  <option value={1}>Option B</option>
-                  <option value={2}>Option C</option>
-                  <option value={3}>Option D</option>
-                </select>
-              </div>
+                  {bhajanMsg.type === "error" ? (
+                    <AlertCircle size={18} />
+                  ) : (
+                    <CheckCircle2 size={18} />
+                  )}
+                  <span>{bhajanMsg.text}</span>
+                </div>
+              )}
 
-              <button type="submit" className="admin-submit-btn">
-                Add &amp; Schedule Question
-              </button>
-            </form>
+              <form onSubmit={handleAddBhajan} className="form-grid-top">
+                <div className="form-group">
+                  <label>Video Title</label>
+                  <input
+                    type="text"
+                    placeholder="Jaise: Shri Radhe Govinda Dhun by Poojya Maharaj Ji"
+                    value={videoTitle}
+                    onChange={(e) => setVideoTitle(e.target.value)}
+                    required
+                  />
+                </div>
+
+                <div className="form-group">
+                  <label>Category</label>
+                  <select
+                    value={videoCategory}
+                    onChange={(e) => setVideoCategory(e.target.value)}
+                  >
+                    <option value="Bhajan">Bhajan</option>
+                    <option value="Mantra">Mantra</option>
+                    <option value="Namavali">Namavali</option>
+                    <option value="Aarti">Aarti</option>
+                    <option value="Kirtan">Kirtan</option>
+                  </select>
+                </div>
+
+                <div className="form-group full-width">
+                  <label>YouTube Link (Watch or Short URL)</label>
+                  <input
+                    type="url"
+                    placeholder="https://www.youtube.com/watch?v=... ya https://youtu.be/..."
+                    value={youtubeUrl}
+                    onChange={(e) => setYoutubeUrl(e.target.value)}
+                    required
+                  />
+                </div>
+
+                <div
+                  className="form-group full-width"
+                  style={{ marginTop: "6px" }}
+                >
+                  <button
+                    type="submit"
+                    disabled={bhajanSubmitting || bhajans.length >= 10}
+                    className="admin-submit-btn"
+                  >
+                    <Plus size={18} />
+                    <span>
+                      {bhajanSubmitting
+                        ? "Adding Video..."
+                        : "Add YouTube Video"}
+                    </span>
+                  </button>
+                </div>
+              </form>
+            </div>
+
+            {/* List of Active Videos */}
+            <div className="admin-bhajan-list-card">
+              <h3>Active Video Gallery ({bhajans.length}/10)</h3>
+              {bhajans.length === 0 ? (
+                <p
+                  style={{
+                    color: "#7a5832",
+                    textAlign: "center",
+                    padding: "16px 0",
+                    fontSize: "0.92rem",
+                  }}
+                >
+                  Abhi koi video add nahi kiya gaya hai.
+                </p>
+              ) : (
+                <div className="admin-video-table">
+                  {bhajans.map((v, idx) => (
+                    <div key={v._id} className="admin-video-row">
+                      <span className="v-idx">#{idx + 1}</span>
+                      <img
+                        src={v.thumbnailUrl}
+                        alt={v.title}
+                        className="v-thumb"
+                      />
+                      <div className="v-info">
+                        <strong>{v.title}</strong>
+                        <span className="v-badge">{v.category}</span>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => handleDeleteBhajan(v._id)}
+                        className="v-delete-btn"
+                        title="Delete video"
+                      >
+                        <Trash2 size={15} />
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
           </div>
         )}
       </div>

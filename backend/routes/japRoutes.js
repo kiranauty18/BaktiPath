@@ -1,35 +1,58 @@
 const express = require("express");
 const router = express.Router();
-const { protect } = require("../middleware/authMiddleware");
+const authMiddleware = require("../middleware/authMiddleware");
+
+const protect = authMiddleware.protect || authMiddleware;
+
+// Helper to get local date string YYYY-MM-DD
+const getLocalDateString = () => {
+  const d = new Date();
+  const year = d.getFullYear();
+  const month = String(d.getMonth() + 1).padStart(2, "0");
+  const day = String(d.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
+};
 
 // @route   POST /api/jap/sync
-// @desc    Sync devotee jap sadhana securely
+// @desc    Increment completed mala and lifetime beads by delta
 router.post("/sync", protect, async (req, res) => {
   try {
-    const { completedMalas, lifetimeJap } = req.body;
-
-    // req.user is guaranteed to exist and be authenticated by protect middleware
+    const { deltaMalas, deltaBeads } = req.body;
     const devotee = req.user;
+    const today = getLocalDateString();
 
-    const malas = Number(completedMalas) || 0;
-    const lifetime = Number(lifetimeJap) || 0;
-
-    // Keep highest sadhana counts
-    devotee.completedMalas = Math.max(devotee.completedMalas || 0, malas);
-    devotee.lifetimeJap = Math.max(devotee.lifetimeJap || 0, lifetime);
-    devotee.japScore = (devotee.completedMalas || 0) * 10;
-
-    // Keep totalScore in sync if present in schema
-    if (devotee.quizScore !== undefined) {
-      devotee.totalScore = (devotee.quizScore || 0) + (devotee.japScore || 0);
+    // Reset daily malas if chanting on a new calendar date
+    if (devotee.lastJapDate !== today) {
+      devotee.dailyCompletedMalas = 0;
+      devotee.lastJapDate = today;
     }
+
+    const malasToAdd = Number(deltaMalas) || 0;
+    const beadsToAdd = Number(deltaBeads) || 0;
+
+    // Directly increment daily and lifetime totals
+    devotee.dailyCompletedMalas = Math.max(
+      0,
+      (devotee.dailyCompletedMalas || 0) + malasToAdd,
+    );
+    devotee.completedMalas = Math.max(
+      0,
+      (devotee.completedMalas || 0) + malasToAdd,
+    );
+    devotee.lifetimeJap = Math.max(0, (devotee.lifetimeJap || 0) + beadsToAdd);
+
+    // 5 points per mala
+    devotee.japScore = (devotee.dailyCompletedMalas || 0) * 5;
+    devotee.totalScore = (devotee.dailyQuizScore || 0) + devotee.japScore;
 
     await devotee.save();
 
     res.status(200).json({
+      success: true,
       message: "Jap sadhana synced successfully",
       devotee: {
         name: devotee.name,
+        todayCompletedMalas: devotee.dailyCompletedMalas,
         completedMalas: devotee.completedMalas,
         lifetimeJap: devotee.lifetimeJap,
         japScore: devotee.japScore,
@@ -37,7 +60,34 @@ router.post("/sync", protect, async (req, res) => {
       },
     });
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    res.status(500).json({ success: false, message: error.message });
+  }
+});
+
+// @route   GET /api/jap/stats
+// @desc    Fetch latest saved sadhana counts for initial page render
+router.get("/stats", protect, async (req, res) => {
+  try {
+    const devotee = req.user;
+    const today = getLocalDateString();
+
+    if (devotee.lastJapDate !== today) {
+      devotee.dailyCompletedMalas = 0;
+      devotee.lastJapDate = today;
+      devotee.japScore = 0;
+      devotee.totalScore = devotee.dailyQuizScore || 0;
+      await devotee.save();
+    }
+
+    res.json({
+      success: true,
+      todayCompletedMalas: devotee.dailyCompletedMalas || 0,
+      completedMalas: devotee.completedMalas || 0,
+      lifetimeJap: devotee.lifetimeJap || 0,
+      japScore: devotee.japScore || 0,
+    });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
   }
 });
 

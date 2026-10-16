@@ -31,7 +31,7 @@ export default function Home() {
       <section className="hero-section">
         <span className="welcome-badge">Jai Shri Radhe Krishna</span>
 
-        <h1>Bhakti Seva Dham</h1>
+        <h1>Radha Krishna Bhaktimarg</h1>
 
         <p className="hero-description">
           Connect with Shri Radha Raman Ji, Banke Bihari Ji, devotional stories,
@@ -124,7 +124,7 @@ export default function Home() {
       <section className="connect-section">
         <h2>Stay Connected</h2>
         <p>
-          Follow our updates and stay connected with the Bhakti Seva Dham
+          Follow our updates and stay connected with the Radha Krishna Bhaktimarg
           community.
         </p>
 

@@ -6,12 +6,17 @@ import {
   User,
   ShieldCheck,
   RotateCcw,
+  Copy,
+  Check,
+  X,
+  QrCode,
 } from "lucide-react";
 import { sevaAPI } from "../api/api";
 import { useAuth } from "../context/AuthContext";
 import "./Seva.css";
 
 const amountOptions = [50, 100, 200, 500];
+const UPI_ID = "9549464445@ibl";
 
 export default function VoluntarySeva() {
   const { devotee } = useAuth();
@@ -22,6 +27,11 @@ export default function VoluntarySeva() {
   const [customAmount, setCustomAmount] = useState("");
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // QR Modal and verification state
+  const [showQRModal, setShowQRModal] = useState(false);
+  const [copiedUpi, setCopiedUpi] = useState(false);
+  const [utrNumber, setUtrNumber] = useState("");
 
   // Sync devotee name when auth state loads
   useEffect(() => {
@@ -41,20 +51,31 @@ export default function VoluntarySeva() {
     setAmount(Number(val) || 0);
   };
 
-  const handleSubmit = async (e) => {
+  const handleCopyUpi = () => {
+    navigator.clipboard.writeText(UPI_ID);
+    setCopiedUpi(true);
+    setTimeout(() => setCopiedUpi(false), 2000);
+  };
+
+  const handleOpenPayment = (e) => {
     e.preventDefault();
     if (amount <= 0) {
-      alert("Kripya ek seva rashi chunein!");
+      alert("Kripya ek valid seva rashi chunein!");
       return;
     }
+    setShowQRModal(true);
+  };
 
+  const handleConfirmPayment = async () => {
     setIsSubmitting(true);
     try {
       // Record pledge in MongoDB backend securely using JWT token
-      await sevaAPI.recordPledge(amount);
+      await sevaAPI.recordPledge(amount, utrNumber);
+      setShowQRModal(false);
       setIsSubmitted(true);
     } catch (error) {
       console.error("Failed to record seva pledge:", error);
+      setShowQRModal(false);
       setIsSubmitted(true);
     } finally {
       setIsSubmitting(false);
@@ -77,15 +98,15 @@ export default function VoluntarySeva() {
         </header>
 
         {!isSubmitted ? (
-          <form onSubmit={handleSubmit} className="seva-card">
+          <form onSubmit={handleOpenPayment} className="seva-card">
             <div className="seva-card-icon-header">
               <div className="seva-top-icon">
                 <Heart size={24} />
               </div>
               <h2>Support Seva Activities</h2>
               <p>
-                Every act of kindness matters. Choose an amount below for this
-                demonstration.
+                Every act of kindness matters. Choose an amount below to make
+                your devotional offering.
               </p>
             </div>
 
@@ -135,20 +156,16 @@ export default function VoluntarySeva() {
             {/* Submit Button */}
             <button
               type="submit"
-              disabled={isSubmitting || amount <= 0}
+              disabled={amount <= 0}
               className="seva-submit-btn"
             >
               <Heart size={16} />
-              <span>
-                {isSubmitting
-                  ? "Recording Sankalp..."
-                  : `Continue (₹${amount})`}
-              </span>
+              <span>Continue (₹{amount})</span>
             </button>
 
             <p className="seva-demo-notice">
-              This demo does not collect real payments. Contributions are
-              recorded for devotional tracking.
+              Your contribution supports our online devotional services and
+              community activities. All contributions are voluntary.
             </p>
           </form>
         ) : (
@@ -172,6 +189,12 @@ export default function VoluntarySeva() {
                 <span>Contribution</span>
                 <strong className="receipt-amt">₹{amount}</strong>
               </div>
+              {utrNumber && (
+                <div className="receipt-row">
+                  <span>Ref / UTR</span>
+                  <strong>{utrNumber}</strong>
+                </div>
+              )}
               <div className="receipt-row">
                 <span>Status</span>
                 <span className="receipt-status-badge">Recorded</span>
@@ -180,12 +203,116 @@ export default function VoluntarySeva() {
 
             <button
               type="button"
-              onClick={() => setIsSubmitted(false)}
+              onClick={() => {
+                setIsSubmitted(false);
+                setUtrNumber("");
+              }}
               className="receipt-reset-btn"
             >
               <RotateCcw size={15} />
               <span>Make another pledge</span>
             </button>
+          </div>
+        )}
+
+        {/* QR Code Scanner Modal */}
+        {showQRModal && (
+          <div
+            className="qr-modal-backdrop"
+            onClick={() => setShowQRModal(false)}
+          >
+            <div className="qr-modal-card" onClick={(e) => e.stopPropagation()}>
+              {/* Modal Header */}
+              <div className="qr-modal-header">
+                <div className="qr-modal-title">
+                  <QrCode size={18} color="#b85b00" />
+                  <h3>Online Seva Payment</h3>
+                </div>
+                <button
+                  type="button"
+                  className="qr-close-btn"
+                  onClick={() => setShowQRModal(false)}
+                >
+                  <X size={18} />
+                </button>
+              </div>
+
+              {/* Modal Body */}
+              <div className="qr-modal-body">
+                <div className="bank-info-badge">
+                  <strong>Central Bank of India</strong>
+                  <small>Primary account for receiving money</small>
+                </div>
+
+                {/* QR Scanner Image */}
+                <div className="qr-frame">
+                  <img
+                    src="/images/Piyush_Gaur.jpeg"
+                    alt="Central Bank UPI QR"
+                    className="qr-img"
+                  />
+                </div>
+
+                {/* Amount Row */}
+                <div className="qr-amount-pill">
+                  <span>Offering Amount:</span>
+                  <strong>₹{amount}</strong>
+                </div>
+
+                {/* UPI ID Row */}
+                <div className="qr-upi-row">
+                  <div className="qr-upi-text">
+                    <span className="qr-upi-label">UPI ID</span>
+                    <strong className="qr-upi-id">{UPI_ID}</strong>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={handleCopyUpi}
+                    className={`qr-copy-btn ${copiedUpi ? "copied" : ""}`}
+                  >
+                    {copiedUpi ? (
+                      <>
+                        <Check size={13} /> Copied
+                      </>
+                    ) : (
+                      <>
+                        <Copy size={13} /> Copy
+                      </>
+                    )}
+                  </button>
+                </div>
+
+                {/* UTR Input */}
+                <div className="qr-utr-group">
+                  <label htmlFor="utr-input">
+                    UPI Reference / UTR No. (Optional):
+                  </label>
+                  <input
+                    id="utr-input"
+                    type="text"
+                    placeholder="Enter 12-digit UTR Number"
+                    value={utrNumber}
+                    onChange={(e) => setUtrNumber(e.target.value)}
+                    className="qr-utr-input"
+                  />
+                </div>
+
+                {/* Confirm Button */}
+                <button
+                  type="button"
+                  onClick={handleConfirmPayment}
+                  disabled={isSubmitting}
+                  className="qr-confirm-btn"
+                >
+                  <Heart size={16} fill="#ffffff" />
+                  <span>
+                    {isSubmitting
+                      ? "Recording Seva..."
+                      : "Maine Payment Kar Diya (Confirm)"}
+                  </span>
+                </button>
+              </div>
+            </div>
           </div>
         )}
 

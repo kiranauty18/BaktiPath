@@ -1,17 +1,17 @@
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
-import { profileAPI } from "../api/api";
 import {
-  User,
   Sparkles,
   Award,
   Heart,
   LogOut,
   Calendar,
   Flame,
-  CheckCircle2,
   ArrowRight,
+  TrendingUp,
+  Clock,
+  BookOpen,
 } from "lucide-react";
 import "./Profile.css";
 
@@ -21,12 +21,26 @@ export default function Profile() {
   const [profileData, setProfileData] = useState(devotee || null);
   const [loading, setLoading] = useState(true);
 
+  const getToken = () => {
+    const storedUser = localStorage.getItem("bhakti_devotee");
+    return devotee?.token || (storedUser ? JSON.parse(storedUser).token : null);
+  };
+
   useEffect(() => {
     const fetchLatestProfile = async () => {
       try {
-        const res = await profileAPI.getProfile();
-        if (res?.devotee) {
-          setProfileData(res.devotee);
+        const token = getToken();
+        if (!token) return;
+
+        // Fetch latest profile directly from backend
+        const res = await fetch("http://localhost:5000/api/auth/profile", {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        const data = await res.json();
+        if (data?.success && data.devotee) {
+          setProfileData(data.devotee);
+        } else if (data?.devotee) {
+          setProfileData(data.devotee);
         }
       } catch (err) {
         console.error("Failed to load profile details:", err);
@@ -36,7 +50,7 @@ export default function Profile() {
     };
 
     fetchLatestProfile();
-  }, []);
+  }, [devotee]);
 
   const handleLogout = () => {
     logoutDevotee();
@@ -47,10 +61,16 @@ export default function Profile() {
     ? profileData.name.trim().charAt(0).toUpperCase()
     : "ॐ";
 
-  const totalMalas = profileData?.completedMalas || 0;
+  // Today's Live Sadhana (Synced directly with Leaderboard)
+  const todayMalas = profileData?.dailyCompletedMalas || 0;
+  const todayJapPts = todayMalas * 5;
+  const todayQuizPts = profileData?.dailyQuizScore || 0;
+  const todayTotalPts = todayJapPts + todayQuizPts;
+
+  // Lifetime Sadhana Stats
+  const lifetimeMalas = profileData?.completedMalas || 0;
   const lifetimeBeads = profileData?.lifetimeJap || 0;
-  const quizScore = profileData?.quizScore || 0;
-  const totalScore = (profileData?.totalScore || 0) || (totalMalas * 10 + quizScore);
+  const totalQuizScore = profileData?.quizScore || 0;
   const sevaAmount = profileData?.totalSevaPledged || 0;
 
   return (
@@ -71,12 +91,20 @@ export default function Profile() {
 
             <div className="profile-text-group">
               <h1>{profileData?.name || "Devotee"}</h1>
-              <p className="profile-email">{profileData?.email || "Registered Devotee"}</p>
+              <p className="profile-email">
+                {profileData?.email || "Registered Devotee"}
+              </p>
               <div className="profile-meta-sub">
                 <span className="meta-pill">
                   <Calendar size={13} />
                   <span>Devotee of Shri Radha Raman &amp; Bihari Ji</span>
                 </span>
+                {profileData?.role === "admin" && (
+                  <span className="meta-pill admin-pill">
+                    <Sparkles size={12} />
+                    <span>Online Seva Admin</span>
+                  </span>
+                )}
               </div>
             </div>
 
@@ -92,16 +120,53 @@ export default function Profile() {
           </div>
         </div>
 
+        {/* Today's Live Leaderboard Standing Highlight */}
+        <div className="today-standing-banner">
+          <div className="standing-banner-left">
+            <div className="standing-icon-wrap">
+              <TrendingUp size={22} color="#b85b00" />
+            </div>
+            <div>
+              <h3>Aaj Ki Sadhana &amp; Leaderboard Score</h3>
+              <p>
+                Nitya Katha Quiz (Total 100 Pts) + Naam Jap Sadhana (5 Pts per
+                Mala)
+              </p>
+            </div>
+          </div>
+          <div className="standing-score-pill">
+            <span className="standing-label">Aaj Ke Kul Ank</span>
+            <strong className="standing-val">{todayTotalPts} Pts</strong>
+            <small className="standing-detail">
+              Quiz: {todayQuizPts} Pts • Jap: {todayJapPts} Pts ({todayMalas}{" "}
+              Malas)
+            </small>
+          </div>
+        </div>
+
         {/* Sadhana Statistics Grid */}
         <section className="profile-stats-grid">
           <div className="stat-card">
-            <div className="stat-icon-wrapper malas">
-              📿
+            <div className="stat-icon-wrapper malas">📿</div>
+            <div className="stat-content">
+              <span className="stat-label">Aaj Ki Malas</span>
+              <strong className="stat-number">{todayMalas}</strong>
+              <small className="stat-caption">
+                {todayJapPts} Points Earned
+              </small>
+            </div>
+          </div>
+
+          <div className="stat-card">
+            <div className="stat-icon-wrapper lifetime-malas">
+              <Award size={22} />
             </div>
             <div className="stat-content">
-              <span className="stat-label">Completed Malas</span>
-              <strong className="stat-number">{totalMalas}</strong>
-              <small className="stat-caption">{totalMalas * 108} Total Chants</small>
+              <span className="stat-label">Lifetime Malas</span>
+              <strong className="stat-number">{lifetimeMalas}</strong>
+              <small className="stat-caption">
+                {lifetimeMalas * 108} Chants Completed
+              </small>
             </div>
           </div>
 
@@ -118,28 +183,17 @@ export default function Profile() {
 
           <div className="stat-card">
             <div className="stat-icon-wrapper quiz">
-              <Award size={22} />
+              <BookOpen size={22} />
             </div>
             <div className="stat-content">
-              <span className="stat-label">Quiz Points</span>
-              <strong className="stat-number">{quizScore}</strong>
-              <small className="stat-caption">Spiritual Gyan Seva</small>
-            </div>
-          </div>
-
-          <div className="stat-card">
-            <div className="stat-icon-wrapper seva">
-              <Heart size={22} />
-            </div>
-            <div className="stat-content">
-              <span className="stat-label">Seva Sankalpa</span>
-              <strong className="stat-number">₹{sevaAmount}</strong>
-              <small className="stat-caption">Voluntary Contribution</small>
+              <span className="stat-label">Lifetime Quiz Pts</span>
+              <strong className="stat-number">{totalQuizScore}</strong>
+              <small className="stat-caption">Gyan Seva Score</small>
             </div>
           </div>
         </section>
 
-        {/* Quick Sadhana Jump Cards */}
+        {/* Quick Sadhana Navigation Cards */}
         <section className="profile-actions-section">
           <h2>Continue Your Daily Sadhana</h2>
           <div className="action-cards-row">
@@ -147,7 +201,10 @@ export default function Profile() {
               <div className="jump-card-icon">📿</div>
               <div className="jump-card-info">
                 <h3>Naam Jap Sadhana</h3>
-                <p>Complete your daily mala and connect with Shri Radha Rani's divine name.</p>
+                <p>
+                  Complete your daily malas with audio chime feedback (5 Pts /
+                  Mala).
+                </p>
               </div>
               <ArrowRight size={18} className="jump-arrow" />
             </Link>
@@ -158,7 +215,10 @@ export default function Profile() {
               </div>
               <div className="jump-card-info">
                 <h3>Daily Spiritual Quiz</h3>
-                <p>Deepen your knowledge of Sanatan Dharma and raise your leaderboard rank.</p>
+                <p>
+                  Read today's Katha, attempt 5 timed questions and earn up to
+                  100 Pts.
+                </p>
               </div>
               <ArrowRight size={18} className="jump-arrow" />
             </Link>

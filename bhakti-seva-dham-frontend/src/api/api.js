@@ -73,11 +73,17 @@ export const leaderboardAPI = {
 };
 
 export const sevaAPI = {
-  recordPledge: async (amount) => {
-    const res = await fetch(`${API_BASE_URL}/seva/pledge`, {
+  recordPledge: async (amount, utrNumber = "") => {
+    const storedUser = localStorage.getItem("bhakti_devotee");
+    const token = storedUser ? JSON.parse(storedUser).token : null;
+
+    const res = await fetch("http://localhost:5000/api/seva/pledge", {
       method: "POST",
-      headers: getAuthHeaders(),
-      body: JSON.stringify({ amount }),
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({ amount, utrNumber }),
     });
     return res.json();
   },

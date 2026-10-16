@@ -4,10 +4,10 @@ const { protect } = require("../middleware/authMiddleware");
 const Devotee = require("../models/Devotee");
 
 // @route   POST /api/seva/pledge
-// @desc    Record a voluntary seva pledge securely
+// @desc    Record a voluntary seva pledge securely with optional UTR ref
 router.post("/pledge", protect, async (req, res) => {
   try {
-    const { amount } = req.body;
+    const { amount, utrNumber } = req.body;
 
     const pledgeAmount = Number(amount) || 0;
     if (pledgeAmount <= 0) {
@@ -18,7 +18,7 @@ router.post("/pledge", protect, async (req, res) => {
 
     const devotee = req.user;
 
-    // Increment seva contributions if tracked in Devotee model
+    // Increment seva contributions in Devotee model
     devotee.totalSevaPledged = (devotee.totalSevaPledged || 0) + pledgeAmount;
     await devotee.save();
 
@@ -28,6 +28,7 @@ router.post("/pledge", protect, async (req, res) => {
       pledge: {
         devoteeName: devotee.name,
         amount: pledgeAmount,
+        utrNumber: utrNumber || null,
         totalSevaPledged: devotee.totalSevaPledged,
       },
     });

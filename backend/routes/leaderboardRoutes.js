@@ -1,17 +1,175 @@
 const express = require("express");
 const router = express.Router();
 const Devotee = require("../models/Devotee");
+const DailyLeaderboard = require("../models/DailyLeaderboard");
+const { protect, adminOnly } = require("../middleware/authMiddleware");
+const { executeDailyMidnightRollover } = require("../cron/dailyMidnightCron");
 
+// Helper: Local date formatter YYYY-MM-DD
+const getDateString = (daysOffset = 0) => {
+  const d = new Date();
+  d.setDate(d.getDate() + daysOffset);
+  const year = d.getFullYear();
+  const month = String(d.getMonth() + 1).padStart(2, "0");
+  const day = String(d.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
+};
+
+// Snapshot generator for historical dates if not already archived
+const generateAndSaveSnapshot = async (targetDate) => {
+  const devotees = await Devotee.find({ role: "devotee" })
+    .select(
+      "name lastQuizDate dailyQuizScore dailyQuizTimeTaken lastJapDate dailyCompletedMalas",
+    )
+    .lean();
+
+  const formatted = devotees
+    .map((d) => {
+      const quizScore =
+        d.lastQuizDate === targetDate ? d.dailyQuizScore || 0 : 0;
+      const quizTimeTaken =
+        d.lastQuizDate === targetDate ? d.dailyQuizTimeTaken || 999999 : 999999;
+      const malas =
+        d.lastJapDate === targetDate ? d.dailyCompletedMalas || 0 : 0;
+      const japPoints = malas * 5;
+      const combinedScore = quizScore + japPoints;
+
+      return {
+        devoteeId: d._id,
+        name: d.name,
+        quizScore,
+        quizTimeTaken,
+        completedMalas: malas,
+        japPoints,
+        combinedScore,
+      };
+    })
+    .sort((a, b) => {
+      if (b.combinedScore !== a.combinedScore) {
+        return b.combinedScore - a.combinedScore;
+      }
+      if (a.quizTimeTaken !== b.quizTimeTaken) {
+        return a.quizTimeTaken - b.quizTimeTaken;
+      }
+      return b.completedMalas - a.completedMalas;
+    })
+    .map((item, idx) => ({ ...item, rank: idx + 1 }));
+
+  const record = await DailyLeaderboard.findOneAndUpdate(
+    { date: targetDate },
+    { date: targetDate, rankings: formatted, isFinalized: true },
+    { upsert: true, new: true, setDefaultsOnInsert: true },
+  );
+
+  return record;
+};
+
+// @route   GET /api/leaderboard?date=YYYY-MM-DD
+// @desc    Get live or historical 3-day snapshots for prize distribution
 router.get("/", async (req, res) => {
   try {
-    // Fetch real devotees sorted by totalScore or weeklyScore
-    const devotees = await Devotee.find({})
-      .select("name totalScore quizScore completedMalas weeklyScore")
-      .sort({ totalScore: -1 })
-      .limit(20)
-      .lean();
+    const today = getDateString(0);
+    const requestedDate = req.query.date || today;
+    const isLiveToday = requestedDate === today;
 
-    res.json({ success: true, devotees });
+    // Available viewing dates
+    const availableDates = [
+      { label: "Today (Live)", value: today },
+      { label: "Yesterday", value: getDateString(-1) },
+      { label: getDateString(-2), value: getDateString(-2) },
+      { label: getDateString(-3), value: getDateString(-3) },
+    ];
+
+    // Case 1: Live Today's Leaderboard
+    if (isLiveToday) {
+      const devotees = await Devotee.find({ role: "devotee" })
+        .select(
+          "name lastQuizDate dailyQuizScore dailyQuizTimeTaken lastJapDate dailyCompletedMalas japScore totalScore",
+        )
+        .lean();
+
+      const formatted = devotees
+        .map((d) => {
+          const todayQuizScore =
+            d.lastQuizDate === today ? d.dailyQuizScore || 0 : 0;
+          const quizTimeTaken =
+            d.lastQuizDate === today ? d.dailyQuizTimeTaken || 999999 : 999999;
+
+          const todayMalas =
+            d.lastJapDate === today ? d.dailyCompletedMalas || 0 : 0;
+          const todayJapPoints = todayMalas * 5;
+
+          const combinedScore = todayQuizScore + todayJapPoints;
+
+          return {
+            _id: d._id,
+            name: d.name,
+            todayQuizScore,
+            quizTimeTaken,
+            completedMalas: todayMalas,
+            japPoints: todayJapPoints,
+            combinedScore,
+          };
+        })
+        .sort((a, b) => {
+          if (b.combinedScore !== a.combinedScore)
+            return b.combinedScore - a.combinedScore;
+          if (a.quizTimeTaken !== b.quizTimeTaken)
+            return a.quizTimeTaken - b.quizTimeTaken;
+          return b.completedMalas - a.completedMalas;
+        });
+
+      return res.json({
+        success: true,
+        selectedDate: today,
+        isLive: true,
+        availableDates,
+        devotees: formatted,
+      });
+    }
+
+    // Case 2: Historical Snapshot (Past days)
+    let snapshot = await DailyLeaderboard.findOne({
+      date: requestedDate,
+    }).lean();
+
+    if (!snapshot) {
+      snapshot = await generateAndSaveSnapshot(requestedDate);
+    }
+
+    const formattedPast = (snapshot?.rankings || []).map((r) => ({
+      _id: r.devoteeId,
+      name: r.name,
+      todayQuizScore: r.quizScore,
+      quizTimeTaken: r.quizTimeTaken || 999999,
+      completedMalas: r.completedMalas,
+      japPoints: r.japPoints,
+      combinedScore: r.combinedScore,
+      rank: r.rank,
+    }));
+
+    res.json({
+      success: true,
+      selectedDate: requestedDate,
+      isLive: false,
+      availableDates,
+      devotees: formattedPast,
+    });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+});
+
+// @route   POST /api/leaderboard/admin/trigger-rollover
+// @desc    Admin manual trigger to test snapshot creation & new day reset immediately
+router.post("/admin/trigger-rollover", protect, adminOnly, async (req, res) => {
+  try {
+    const result = await executeDailyMidnightRollover();
+    res.json({
+      success: true,
+      message: "Daily midnight rollover executed successfully!",
+      result,
+    });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
   }

@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
-import { japAPI } from "../api/api";
 import { useAuth } from "../context/AuthContext";
 import {
   Sparkles,
@@ -17,50 +16,75 @@ import "./NaamJap.css";
 export default function NaamJap() {
   const { devotee } = useAuth();
   const [userName, setUserName] = useState(() => {
-    return devotee?.name || localStorage.getItem("bhakti_devotee_name") || "";
+    return (
+      devotee?.name || localStorage.getItem("bhakti_devotee_name") || "Devotee"
+    );
   });
+
   const [beadCount, setBeadCount] = useState(0); // 0 to 108
-  const [completedMalas, setCompletedMalas] = useState(0);
-  const [lifetimeJap, setLifetimeJap] = useState(() => {
-    return Number(localStorage.getItem("jap_lifetime_count")) || 0;
-  });
+  const [todayMalas, setTodayMalas] = useState(0);
+  const [lifetimeJap, setLifetimeJap] = useState(0);
+
   const [audioEnabled, setAudioEnabled] = useState(true);
   const [targetMala, setTargetMala] = useState(1);
   const [isPressing, setIsPressing] = useState(false);
   const audioCtxRef = useRef(null);
 
-  // Sync state whenever login/logout happens
+  const getToken = () => {
+    const storedUser = localStorage.getItem("bhakti_devotee");
+    return devotee?.token || (storedUser ? JSON.parse(storedUser).token : null);
+  };
+
+  // Fetch current database totals on mount
   useEffect(() => {
+    const fetchLatestStats = async () => {
+      const token = getToken();
+      if (!token) return;
+      try {
+        const res = await fetch("http://localhost:5000/api/jap/stats", {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        const data = await res.json();
+        if (data.success) {
+          setTodayMalas(data.todayCompletedMalas);
+          setLifetimeJap(data.lifetimeJap);
+        }
+      } catch (err) {
+        console.error("Failed to fetch initial stats:", err);
+      }
+    };
+
     if (devotee?.name) {
       setUserName(devotee.name);
-      setLifetimeJap(Number(devotee.lifetimeJap) || 0);
-      setCompletedMalas(Number(devotee.completedMalas) || 0);
-      setBeadCount(0);
-    } else {
-      setUserName("");
-      setLifetimeJap(0);
-      setCompletedMalas(0);
-      setBeadCount(0);
     }
+    fetchLatestStats();
   }, [devotee]);
 
-  // Sync count securely to MongoDB backend using token
-  const syncWithBackend = async (malas, lifetime) => {
+  // Send delta (+1 mala or -1 mala) to backend
+  const syncDeltaWithBackend = async (deltaMalas, deltaBeads) => {
+    const token = getToken();
+    if (!token) return;
+
     try {
-      await japAPI.syncSadhana(malas, lifetime);
+      const res = await fetch("http://localhost:5000/api/jap/sync", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ deltaMalas, deltaBeads }),
+      });
+
+      const data = await res.json();
+      if (data?.success && data.devotee) {
+        setTodayMalas(data.devotee.todayCompletedMalas);
+        setLifetimeJap(data.devotee.lifetimeJap);
+      }
     } catch (err) {
-      console.error("Backend sadhana sync failed:", err);
+      console.error("Sync delta error:", err);
     }
   };
 
-  // Keep local storage in sync for session backup
-  useEffect(() => {
-    if (!userName.trim()) return;
-    localStorage.setItem("bhakti_devotee_name", userName.trim());
-    localStorage.setItem("jap_lifetime_count", lifetimeJap);
-  }, [completedMalas, lifetimeJap, userName]);
-
-  // Pure Web Audio tone generation
   const playChantTone = (isCompletion = false) => {
     if (!audioEnabled) return;
     try {
@@ -70,18 +94,15 @@ export default function NaamJap() {
         )();
       }
       const ctx = audioCtxRef.current;
-      if (ctx.state === "suspended") {
-        ctx.resume();
-      }
+      if (ctx.state === "suspended") ctx.resume();
 
       const osc = ctx.createOscillator();
       const gain = ctx.createGain();
 
       if (isCompletion) {
-        // High harmonic temple bell chime on 108th bead
         osc.type = "sine";
-        osc.frequency.setValueAtTime(587.33, ctx.currentTime); // D5
-        osc.frequency.exponentialRampToValueAtTime(880, ctx.currentTime + 0.3); // A5
+        osc.frequency.setValueAtTime(587.33, ctx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(880, ctx.currentTime + 0.3);
         gain.gain.setValueAtTime(0.3, ctx.currentTime);
         gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 1.2);
         osc.connect(gain);
@@ -89,9 +110,8 @@ export default function NaamJap() {
         osc.start();
         osc.stop(ctx.currentTime + 1.2);
       } else {
-        // Soft wooden bead click tone
         osc.type = "triangle";
-        osc.frequency.setValueAtTime(261.63, ctx.currentTime); // C4
+        osc.frequency.setValueAtTime(261.63, ctx.currentTime);
         gain.gain.setValueAtTime(0.12, ctx.currentTime);
         gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.09);
         osc.connect(gain);
@@ -113,16 +133,14 @@ export default function NaamJap() {
     setTimeout(() => setIsPressing(false), 140);
 
     const nextBead = beadCount + 1;
-    const nextLifetime = lifetimeJap + 1;
-    setLifetimeJap(nextLifetime);
+    setLifetimeJap((prev) => prev + 1);
 
     if (nextBead >= 108) {
-      const nextMalas = completedMalas + 1;
       setBeadCount(0);
-      setCompletedMalas(nextMalas);
+      setTodayMalas((prev) => prev + 1);
       playChantTone(true);
-      // Auto-sync completed Mala securely to backend
-      syncWithBackend(nextMalas, nextLifetime);
+      // Increment 1 mala and 108 beads in database
+      syncDeltaWithBackend(1, 108);
     } else {
       setBeadCount(nextBead);
       playChantTone(false);
@@ -133,24 +151,22 @@ export default function NaamJap() {
     if (beadCount > 0) {
       setBeadCount((prev) => prev - 1);
       setLifetimeJap((prev) => Math.max(0, prev - 1));
-    } else if (completedMalas > 0) {
-      const updatedMalas = completedMalas - 1;
-      const updatedLifetime = Math.max(0, lifetimeJap - 1);
-      setCompletedMalas(updatedMalas);
+    } else if (todayMalas > 0) {
+      setTodayMalas((prev) => Math.max(0, prev - 1));
       setBeadCount(107);
-      setLifetimeJap(updatedLifetime);
-      syncWithBackend(updatedMalas, updatedLifetime);
+      setLifetimeJap((prev) => Math.max(0, prev - 1));
+      // Decrement 1 mala and 1 bead in database
+      syncDeltaWithBackend(-1, -1);
     }
   };
 
   const handleResetSession = () => {
     if (
       window.confirm(
-        "Kya aap vartaman session counter reset karna chahte hain?",
+        "Kya aap vartaman mala ke beads ko 0 par reset karna chahte hain?",
       )
     ) {
       setBeadCount(0);
-      setCompletedMalas(0);
     }
   };
 
@@ -168,20 +184,17 @@ export default function NaamJap() {
           </span>
           <h1>Shri Radha Rani &amp; Krishn Jap</h1>
           <p>
-            "Radhe Radhe" smaran karein. Har mala par 10 points leaderboard par
+            "Radhe Radhe" smaran karein. Har mala par 5 points leaderboard par
             jodein.
           </p>
         </header>
 
         {/* Main Jap Plaque */}
         <div className="jap-card">
-          {/* Devotee Strip */}
           <div className="jap-devotee-strip">
             <div className="jap-devotee-field">
               <User size={16} />
-              <span className="jap-logged-name">
-                {userName || devotee?.name || "Devotee"}
-              </span>
+              <span className="jap-logged-name">{userName}</span>
             </div>
 
             <div className="jap-quick-actions">
@@ -198,14 +211,13 @@ export default function NaamJap() {
                 type="button"
                 onClick={handleResetSession}
                 className="jap-icon-btn reset-btn"
-                title="Reset Session"
+                title="Reset Current Beads"
               >
                 <RotateCcw size={15} />
               </button>
             </div>
           </div>
 
-          {/* Mala Target Selectors */}
           <div className="jap-target-row">
             <span className="jap-target-label">Lakshya:</span>
             {[1, 11, 16, 21].map((m) => (
@@ -220,19 +232,8 @@ export default function NaamJap() {
             ))}
           </div>
 
-          {/* Central Interactive Mala Bead Ring */}
           <div className="jap-dial-area">
-            <div
-              className="jap-ring-wrapper"
-              onClick={handleBeadClick}
-              role="button"
-              tabIndex={0}
-              onKeyDown={(e) => {
-                if (e.key === "Enter" || e.key === " ") {
-                  handleBeadClick(e);
-                }
-              }}
-            >
+            <div className="jap-ring-wrapper">
               <svg className="jap-svg-ring" viewBox="0 0 250 250">
                 <circle className="jap-ring-bg" cx="125" cy="125" r={radius} />
                 <circle
@@ -247,7 +248,6 @@ export default function NaamJap() {
                 />
               </svg>
 
-              {/* Central Tap Disc */}
               <button
                 type="button"
                 onClick={handleBeadClick}
@@ -264,21 +264,20 @@ export default function NaamJap() {
             </div>
           </div>
 
-          {/* Live Progress Metrics Bar */}
           <div className="jap-metrics-bar">
             <div className="jap-metric-item">
-              <span className="metric-title">Completed Malas</span>
+              <span className="metric-title">Aaj Ki Malas</span>
               <strong className="metric-val highlight">
-                {completedMalas} <small>/ {targetMala}</small>
+                {todayMalas} <small>/ {targetMala}</small>
               </strong>
             </div>
 
             <div className="jap-metric-divider" />
 
             <div className="jap-metric-item">
-              <span className="metric-title">Points Earned</span>
+              <span className="metric-title">Jap Points (5 Pts/Mala)</span>
               <strong className="metric-val">
-                {completedMalas * 10} <small>Pts</small>
+                {todayMalas * 5} <small>Pts</small>
               </strong>
             </div>
 
@@ -290,30 +289,24 @@ export default function NaamJap() {
             </div>
           </div>
 
-          {/* Bottom Actions */}
           <div className="jap-actions-footer">
             <button
               type="button"
               onClick={handleUndo}
-              disabled={beadCount === 0 && completedMalas === 0}
+              disabled={beadCount === 0 && todayMalas === 0}
               className="jap-footer-btn undo-btn"
             >
               <Undo2 size={16} />
               <span>Undo Last</span>
             </button>
 
-            <Link
-              to="/leaderboard"
-              onClick={() => syncWithBackend(completedMalas, lifetimeJap)}
-              className="jap-footer-btn lb-btn"
-            >
+            <Link to="/leaderboard" className="jap-footer-btn lb-btn">
               <Award size={16} />
               <span>View Leaderboard</span>
             </Link>
           </div>
         </div>
 
-        {/* Devotional Decor Note */}
         <div className="jap-footer-decor">
           Shri Radha Raman &amp; Banke Bihari Ji ki kripa se sanchalit
         </div>

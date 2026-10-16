@@ -8,11 +8,11 @@ import Home from "./pages/Home";
 import Quiz from "./pages/Quiz";
 import Leaderboard from "./pages/Leaderboard";
 import Seva from "./pages/Seva";
-import KathaBhajans from "./pages/KathaBhajans";
 import NaamJap from "./pages/NaamJap";
 import ProtectedRoute from "./components/ProtectedRoute";
 import Profile from "./pages/Profile";
 import AdminDashboard from "./pages/AdminDashboard";
+import Bhajans from "./pages/Bhajans";
 
 function NotFound() {
   return (
@@ -42,7 +42,7 @@ function Footer() {
             ॐ
           </span>
           <strong className="text-lg font-serif tracking-wider text-white">
-            Bhakti Seva Dham
+            Radha Krishna Bhaktimarg
           </strong>
         </div>
 
@@ -64,8 +64,8 @@ function Footer() {
           <Link to="/leaderboard" className="hover:text-white transition">
             Leaderboard
           </Link>
-          <Link to="/katha" className="hover:text-white transition">
-            Katha &amp; Bhajans
+          <Link to="/bhajans" className="hover:text-white transition">
+            Bhajans &amp; Mantras
           </Link>
           <Link to="/jap" className="hover:text-white transition">
             📿 Naam Jap
@@ -76,7 +76,7 @@ function Footer() {
         </nav>
 
         <small className="block text-[#A8929A] text-[11px] pt-2 border-t border-white/10 w-full max-w-xs mx-auto">
-          © 2026 Bhakti Seva Dham. Designed BY @Ki.ran_.ig
+          © 2026 Radha Krishna Bhaktimarg. Designed BY @Ki.ran_.ig
         </small>
       </div>
     </footer>
@@ -91,7 +91,7 @@ export default function App() {
       <div className="app-shell flex flex-col min-h-screen bg-spiritual-cream font-sans">
         <Navbar />
 
-        {/* Global Modal - Works from Navbar, Home hero buttons, and cards */}
+        {/* Global Auth Modal */}
         <AuthModal isOpen={isAuthModalOpen} onClose={closeAuthModal} />
 
         <main className="app-content flex-grow">
@@ -123,18 +123,10 @@ export default function App() {
               }
             />
             <Route
-              path="/katha"
+              path="/bhajans"
               element={
                 <ProtectedRoute>
-                  <KathaBhajans />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/katha-bhajans"
-              element={
-                <ProtectedRoute>
-                  <KathaBhajans />
+                  <Bhajans />
                 </ProtectedRoute>
               }
             />
@@ -157,7 +149,7 @@ export default function App() {
             <Route
               path="/admin"
               element={
-                <ProtectedRoute>
+                <ProtectedRoute adminOnly={true}>
                   <AdminDashboard />
                 </ProtectedRoute>
               }

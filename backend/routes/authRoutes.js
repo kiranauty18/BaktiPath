@@ -64,11 +64,13 @@ router.post("/login", async (req, res) => {
         name: devotee.name,
         email: devotee.email,
         role: devotee.role || "devotee",
-        totalScore: devotee.totalScore,
-        quizScore: devotee.quizScore,
-        japScore: devotee.japScore,
-        completedMalas: devotee.completedMalas,
-        lifetimeJap: devotee.lifetimeJap,
+        totalScore: devotee.totalScore || 0,
+        quizScore: devotee.quizScore || 0,
+        dailyQuizScore: devotee.dailyQuizScore || 0,
+        japScore: devotee.japScore || 0,
+        completedMalas: devotee.completedMalas || 0,
+        dailyCompletedMalas: devotee.dailyCompletedMalas || 0,
+        lifetimeJap: devotee.lifetimeJap || 0,
         token: generateToken(devotee._id),
       });
     } else {
@@ -79,19 +81,47 @@ router.post("/login", async (req, res) => {
   }
 });
 
-// @route   GET /api/auth/me (Get profile using token)
-router.get("/me", protect, async (req, res) => {
+// Handler for fetching devotee profile
+const getDevoteeProfile = async (req, res) => {
   try {
-    // req.user was attached by authMiddleware without the password field
+    const devotee = await Devotee.findById(req.user._id).select("-password");
+    if (!devotee) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Devotee not found" });
+    }
+
     res.status(200).json({
       success: true,
-      devotee: req.user,
+      devotee: {
+        _id: devotee._id,
+        name: devotee.name,
+        email: devotee.email,
+        role: devotee.role || "devotee",
+        completedMalas: devotee.completedMalas || 0,
+        dailyCompletedMalas:
+          devotee.dailyCompletedMalas ||
+          (devotee.japScore ? devotee.japScore / 5 : 0),
+        lifetimeJap: devotee.lifetimeJap || 0,
+        japScore: devotee.japScore || 0,
+        quizScore: devotee.quizScore || 0,
+        dailyQuizScore: devotee.dailyQuizScore || 0,
+        totalScore:
+          devotee.totalScore ||
+          (devotee.japScore || 0) + (devotee.dailyQuizScore || 0),
+        totalSevaPledged: devotee.totalSevaPledged || 0,
+      },
     });
   } catch (error) {
-    res
-      .status(500)
-      .json({ success: false, message: "Server error fetching profile" });
+    res.status(500).json({ success: false, message: error.message });
   }
-});
+};
+
+// Registered on both endpoints to ensure backward and frontend route compatibility
+// @route   GET /api/auth/me
+router.get("/me", protect, getDevoteeProfile);
+
+// @route   GET /api/auth/profile
+router.get("/profile", protect, getDevoteeProfile);
 
 module.exports = router;
