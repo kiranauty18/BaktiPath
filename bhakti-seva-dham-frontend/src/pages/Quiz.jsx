@@ -17,6 +17,7 @@ import {
   Zap,
 } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
+import { API_BASE_URL } from "../api/api";
 import "./Quiz.css";
 
 const LANG_CONFIG = [
@@ -86,7 +87,7 @@ export default function Quiz() {
       const token =
         devotee?.token || (storedUser ? JSON.parse(storedUser).token : null);
 
-      const res = await fetch("http://localhost:5000/api/quiz/today-katha", {
+      const res = await fetch(`${API_BASE_URL}/quiz/today-katha`, {
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
@@ -193,7 +194,7 @@ export default function Quiz() {
         selectedIndex: userAnswers[idx] !== undefined ? userAnswers[idx] : -1,
       }));
 
-      const res = await fetch("http://localhost:5000/api/quiz/submit-daily", {
+      const res = await fetch(`${API_BASE_URL}/quiz/submit-daily`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

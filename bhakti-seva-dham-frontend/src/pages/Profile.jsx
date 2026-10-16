@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
+import { API_BASE_URL } from "../api/api";
 import {
   Sparkles,
   Award,
@@ -35,7 +36,7 @@ export default function Profile() {
         if (!token) return;
 
         // Fetch latest profile directly from backend
-        const res = await fetch("http://localhost:5000/api/auth/profile", {
+        const res = await fetch(`${API_BASE_URL}/auth/profile`, {
           headers: { Authorization: `Bearer ${token}` },
         });
         const data = await res.json();
@@ -61,7 +62,7 @@ export default function Profile() {
       try {
         const token = getToken();
         const res = await fetch(
-          "http://localhost:5000/api/seva/admin/analytics",
+          `${API_BASE_URL}/seva/admin/analytics`,
           {
             headers: { Authorization: `Bearer ${token}` },
           },
@@ -85,7 +86,7 @@ export default function Profile() {
         const token = getToken();
         if (!token) return;
 
-        const res = await fetch("http://localhost:5000/api/seva/history", {
+        const res = await fetch(`${API_BASE_URL}/seva/history`, {
           headers: { Authorization: `Bearer ${token}` },
         });
         const data = await res.json();

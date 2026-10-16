@@ -1,8 +1,12 @@
 // src/services/api.js
 
 // Dynamically pick Vercel environment variable, fallback to localhost for development
-const BACKEND_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
-const API_BASE_URL = `${BACKEND_URL.replace(/\/+$/, "")}/api`;
+const configuredBackendUrl =
+  import.meta.env.VITE_API_URL || import.meta.env.VITE_API_BASE_URL;
+const BACKEND_URL = (configuredBackendUrl || "http://localhost:5000")
+  .replace(/\/+$/, "")
+  .replace(/\/api$/, "");
+export const API_BASE_URL = `${BACKEND_URL}/api`;
 
 // Helper to retrieve auth headers with Bearer token
 const getAuthHeaders = () => {

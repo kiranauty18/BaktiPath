@@ -16,6 +16,7 @@ import {
   Maximize2,
 } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
+import { API_BASE_URL } from "../api/api";
 import "./Bhajans.css";
 
 const CATEGORIES = ["All", "Bhajan", "Mantra", "Namavali", "Aarti", "Kirtan"];
@@ -47,8 +48,8 @@ export default function Bhajans() {
       setLoading(true);
       const url =
         category === "All"
-          ? "http://localhost:5000/api/bhajans"
-          : `http://localhost:5000/api/bhajans?category=${encodeURIComponent(category)}`;
+          ? `${API_BASE_URL}/bhajans`
+          : `${API_BASE_URL}/bhajans?category=${encodeURIComponent(category)}`;
 
       const res = await fetch(url);
       const data = await res.json();

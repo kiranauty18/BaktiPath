@@ -9,6 +9,7 @@ import {
   Zap,
 } from "lucide-react";
 import "./Leaderboard.css";
+import { API_BASE_URL } from "../api/api";
 
 const getTodayDateString = () => {
   const d = new Date();
@@ -32,7 +33,7 @@ export default function Leaderboard() {
     try {
       setLoading(true);
       const targetDate = dateParam || getTodayDateString();
-      const url = `http://localhost:5000/api/leaderboard?date=${targetDate}`;
+      const url = `${API_BASE_URL}/leaderboard?date=${targetDate}`;
 
       const res = await fetch(url);
       const data = await res.json();

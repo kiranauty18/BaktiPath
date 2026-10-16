@@ -15,6 +15,7 @@ import {
   X,
 } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
+import { API_BASE_URL } from "../api/api";
 import "./AdminDashboard.css";
 
 export default function AdminDashboard() {
@@ -63,7 +64,7 @@ export default function AdminDashboard() {
 
   const fetchSevaAnalytics = async () => {
     try {
-      const res = await fetch("http://localhost:5000/api/seva/admin/analytics", {
+      const res = await fetch(`${API_BASE_URL}/seva/admin/analytics`, {
         headers: {
           Authorization: `Bearer ${getToken()}`,
         },
@@ -80,7 +81,7 @@ export default function AdminDashboard() {
 
   const fetchBhajans = async () => {
     try {
-      const res = await fetch("http://localhost:5000/api/bhajans");
+      const res = await fetch(`${API_BASE_URL}/bhajans`);
       const data = await res.json();
       if (data.success) {
         setBhajans(data.bhajans || []);
@@ -99,7 +100,7 @@ export default function AdminDashboard() {
   const fetchPendingTransactions = async () => {
     try {
       setSevaLoading(true);
-      const res = await fetch("http://localhost:5000/api/seva/admin/pending", {
+      const res = await fetch(`${API_BASE_URL}/seva/admin/pending`, {
         headers: {
           Authorization: `Bearer ${getToken()}`,
         },
@@ -126,7 +127,7 @@ export default function AdminDashboard() {
     try {
       setSevaMsg({ type: "", text: "" });
       const res = await fetch(
-        `http://localhost:5000/api/seva/admin/verify/${transactionId}`,
+        `${API_BASE_URL}/seva/admin/verify/${transactionId}`,
         {
           method: "POST",
           headers: {
@@ -226,7 +227,7 @@ export default function AdminDashboard() {
 
     try {
       setKathaSubmitting(true);
-      const res = await fetch("http://localhost:5000/api/quiz/admin/katha", {
+      const res = await fetch(`${API_BASE_URL}/quiz/admin/katha`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -278,7 +279,7 @@ export default function AdminDashboard() {
 
     try {
       setBhajanSubmitting(true);
-      const res = await fetch("http://localhost:5000/api/bhajans/admin", {
+      const res = await fetch(`${API_BASE_URL}/bhajans/admin`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -313,7 +314,7 @@ export default function AdminDashboard() {
   const handleDeleteBhajan = async (id) => {
     if (!window.confirm("Kya aap sach me ye video hatana chahte hain?")) return;
     try {
-      const res = await fetch(`http://localhost:5000/api/bhajans/admin/${id}`, {
+      const res = await fetch(`${API_BASE_URL}/bhajans/admin/${id}`, {
         method: "DELETE",
         headers: {
           Authorization: `Bearer ${getToken()}`,

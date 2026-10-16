@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
+import { API_BASE_URL } from "../api/api";
 import {
   Sparkles,
   RotateCcw,
@@ -41,7 +42,7 @@ export default function NaamJap() {
       const token = getToken();
       if (!token) return;
       try {
-        const res = await fetch("http://localhost:5000/api/jap/stats", {
+        const res = await fetch(`${API_BASE_URL}/jap/stats`, {
           headers: { Authorization: `Bearer ${token}` },
         });
         const data = await res.json();
@@ -66,7 +67,7 @@ export default function NaamJap() {
     if (!token) return;
 
     try {
-      const res = await fetch("http://localhost:5000/api/jap/sync", {
+      const res = await fetch(`${API_BASE_URL}/jap/sync`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
