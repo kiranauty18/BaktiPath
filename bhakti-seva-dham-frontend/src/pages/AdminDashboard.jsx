@@ -10,6 +10,9 @@ import {
   AlertCircle,
   HelpCircle,
   Sparkles,
+  WalletCards,
+  Check,
+  X,
 } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
 import "./AdminDashboard.css";
@@ -48,10 +51,31 @@ export default function AdminDashboard() {
   const [videoCategory, setVideoCategory] = useState("Bhajan");
   const [bhajanSubmitting, setBhajanSubmitting] = useState(false);
   const [bhajanMsg, setBhajanMsg] = useState({ type: "", text: "" });
+  const [pendingTransactions, setPendingTransactions] = useState([]);
+  const [sevaLoading, setSevaLoading] = useState(false);
+  const [sevaMsg, setSevaMsg] = useState({ type: "", text: "" });
+  const [sevaAnalytics, setSevaAnalytics] = useState(null);
 
   const getToken = () => {
     const storedUser = localStorage.getItem("bhakti_devotee");
     return devotee?.token || (storedUser ? JSON.parse(storedUser).token : null);
+  };
+
+  const fetchSevaAnalytics = async () => {
+    try {
+      const res = await fetch("http://localhost:5000/api/seva/admin/analytics", {
+        headers: {
+          Authorization: `Bearer ${getToken()}`,
+        },
+      });
+      const data = await res.json();
+      if (!data.success) {
+        throw new Error(data.message || "Seva analytics load nahi ho saka.");
+      }
+      setSevaAnalytics(data.analytics);
+    } catch (err) {
+      setSevaMsg({ type: "error", text: err.message });
+    }
   };
 
   const fetchBhajans = async () => {
@@ -68,7 +92,61 @@ export default function AdminDashboard() {
 
   useEffect(() => {
     fetchBhajans();
+    fetchPendingTransactions();
+    fetchSevaAnalytics();
   }, []);
+
+  const fetchPendingTransactions = async () => {
+    try {
+      setSevaLoading(true);
+      const res = await fetch("http://localhost:5000/api/seva/admin/pending", {
+        headers: {
+          Authorization: `Bearer ${getToken()}`,
+        },
+      });
+      const data = await res.json();
+      if (!data.success) {
+        throw new Error(data.message || "Pending payments load nahi ho sake.");
+      }
+      setPendingTransactions(data.transactions || []);
+    } catch (err) {
+      setSevaMsg({ type: "error", text: err.message });
+    } finally {
+      setSevaLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    if (activeTab === "seva") {
+      fetchPendingTransactions();
+    }
+  }, [activeTab]);
+
+  const handleSevaVerification = async (transactionId, action) => {
+    try {
+      setSevaMsg({ type: "", text: "" });
+      const res = await fetch(
+        `http://localhost:5000/api/seva/admin/verify/${transactionId}`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${getToken()}`,
+          },
+          body: JSON.stringify({ action }),
+        },
+      );
+      const data = await res.json();
+      if (!data.success) {
+        throw new Error(data.message || "Transaction update nahi ho saka.");
+      }
+      setSevaMsg({ type: "success", text: data.message });
+      fetchPendingTransactions();
+      fetchSevaAnalytics();
+    } catch (err) {
+      setSevaMsg({ type: "error", text: err.message });
+    }
+  };
 
   // ---------------- DYNAMIC QUESTION HANDLERS ----------------
   const handleAddQuestion = () => {
@@ -289,7 +367,16 @@ export default function AdminDashboard() {
               <Video size={15} />
               <span>Bhajans &amp; Mantras ({bhajans.length}/10)</span>
             </button>
+            <button
+              type="button"
+              className={`admin-tab-btn ${activeTab === "seva" ? "active" : ""}`}
+              onClick={() => setActiveTab("seva")}
+            >
+              <WalletCards size={15} />
+              <span>Pending Seva ({pendingTransactions.length})</span>
+            </button>
           </div>
+
         </header>
 
         {/* ----------------- TAB 1: KATHA & QUESTIONS ----------------- */}
@@ -600,6 +687,102 @@ export default function AdminDashboard() {
                       >
                         <Trash2 size={15} />
                       </button>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+            </div>
+          </div>
+        )}
+
+        {activeTab === "seva" && (
+          <div className="admin-seva-section">
+            <div className="admin-form-card">
+              <div className="section-title-strip">
+                <h2>Pending Seva Payments</h2>
+                <button
+                  type="button"
+                  className="seva-refresh-btn"
+                  onClick={fetchPendingTransactions}
+                  disabled={sevaLoading}
+                >
+                  Refresh
+                </button>
+              </div>
+
+              {sevaAnalytics && (
+                <div className="seva-analytics-grid">
+                  <div className="seva-analytics-card pending">
+                    <span>Pending Requests</span>
+                    <strong>{sevaAnalytics.pending.count}</strong>
+                    <small>₹{sevaAnalytics.pending.amount}</small>
+                  </div>
+                  <div className="seva-analytics-card verified">
+                    <span>Accepted Payments</span>
+                    <strong>{sevaAnalytics.verified.count}</strong>
+                    <small>₹{sevaAnalytics.verified.amount}</small>
+                  </div>
+                  <div className="seva-analytics-card rejected">
+                    <span>Rejected Requests</span>
+                    <strong>{sevaAnalytics.rejected.count}</strong>
+                    <small>₹{sevaAnalytics.rejected.amount}</small>
+                  </div>
+                </div>
+              )}
+
+              {sevaMsg.text && (
+                <div
+                  className={`admin-alert ${sevaMsg.type === "error" ? "alert-error" : "alert-success"}`}
+                >
+                  {sevaMsg.type === "error" ? (
+                    <AlertCircle size={18} />
+                  ) : (
+                    <CheckCircle2 size={18} />
+                  )}
+                  <span>{sevaMsg.text}</span>
+                </div>
+              )}
+
+              {sevaLoading ? (
+                <p className="seva-empty-state">Loading pending payments...</p>
+              ) : pendingTransactions.length === 0 ? (
+                <p className="seva-empty-state">
+                  No pending payment requests.
+                </p>
+              ) : (
+                <div className="seva-request-list">
+                  {pendingTransactions.map((transaction) => (
+                    <div className="seva-request-card" key={transaction._id}>
+                      <div className="seva-request-details">
+                        <strong>{transaction.devoteeName}</strong>
+                        <span>Amount: ₹{transaction.amount}</span>
+                        <span>UTR: {transaction.utrNumber}</span>
+                        <small>
+                          Submitted{" "}
+                          {new Date(transaction.createdAt).toLocaleString()}
+                        </small>
+                      </div>
+                      <div className="seva-request-actions">
+                        <button
+                          type="button"
+                          className="seva-approve-btn"
+                          onClick={() =>
+                            handleSevaVerification(transaction._id, "approve")
+                          }
+                        >
+                          <Check size={15} /> Verify
+                        </button>
+                        <button
+                          type="button"
+                          className="seva-reject-btn"
+                          onClick={() =>
+                            handleSevaVerification(transaction._id, "reject")
+                          }
+                        >
+                          <X size={15} /> Reject
+                        </button>
+                      </div>
                     </div>
                   ))}
                 </div>

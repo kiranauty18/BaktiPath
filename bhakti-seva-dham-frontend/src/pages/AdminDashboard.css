@@ -448,6 +448,135 @@
   gap: 20px;
 }
 
+.admin-seva-section {
+  width: 100%;
+}
+
+.seva-refresh-btn {
+  border: 1px solid #ebd9bc;
+  border-radius: 999px;
+  padding: 7px 14px;
+  background: #fffdfa;
+  color: #5c141d;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.seva-refresh-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.seva-empty-state {
+  margin: 0;
+  padding: 24px 0 8px;
+  color: #7a5832;
+  text-align: center;
+}
+
+.seva-analytics-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  width: 100%;
+  margin-bottom: 20px;
+}
+
+.seva-analytics-card {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 14px;
+  border-radius: 12px;
+  border: 1px solid #ebd9bc;
+}
+
+.seva-analytics-card span {
+  font-size: 0.76rem;
+  font-weight: 700;
+  color: #5c3821;
+}
+
+.seva-analytics-card strong {
+  font-size: 1.45rem;
+  color: #4a0e17;
+}
+
+.seva-analytics-card small {
+  color: #7a5832;
+}
+
+.seva-analytics-card.pending {
+  background: #fffaf0;
+}
+
+.seva-analytics-card.verified {
+  background: #f0fdf4;
+}
+
+.seva-analytics-card.rejected {
+  background: #fff5f5;
+}
+
+.seva-request-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.seva-request-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  padding: 16px;
+  border: 1px solid #ebd9bc;
+  border-radius: 12px;
+  background: #fdfbf7;
+}
+.seva-request-details {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  color: #5c3821;
+}
+
+.seva-request-details strong {
+  color: #4a0e17;
+  font-size: 1rem;
+}
+
+.seva-request-details small {
+  color: #7a5832;
+}
+
+.seva-request-actions {
+  display: flex;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.seva-approve-btn,
+.seva-reject-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  border: none;
+  border-radius: 8px;
+  padding: 8px 11px;
+  color: #ffffff;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.seva-approve-btn {
+  background: #15803d;
+}
+
+.seva-reject-btn {
+  background: #b91c1c;
+}
+
 .admin-bhajan-list-card {
   width: 100%;
   background: #ffffff;
@@ -541,5 +670,29 @@
   }
   .admin-header h1 {
     font-size: 1.7rem;
+  }
+  .admin-tabs {
+    width: 100%;
+    flex-direction: column;
+    border-radius: 16px;
+  }
+  .admin-tab-btn {
+    width: 100%;
+    justify-content: center;
+  }
+  .seva-request-card {
+    align-items: stretch;
+    flex-direction: column;
+  }
+  .seva-analytics-grid {
+    grid-template-columns: 1fr;
+  }
+  .seva-request-actions {
+    width: 100%;
+  }
+  .seva-approve-btn,
+  .seva-reject-btn {
+    flex: 1;
+    justify-content: center;
   }
 }

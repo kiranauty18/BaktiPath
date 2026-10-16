@@ -20,6 +20,8 @@ export default function Profile() {
   const navigate = useNavigate();
   const [profileData, setProfileData] = useState(devotee || null);
   const [loading, setLoading] = useState(true);
+  const [sevaHistory, setSevaHistory] = useState([]);
+  const [sevaAnalytics, setSevaAnalytics] = useState(null);
 
   const getToken = () => {
     const storedUser = localStorage.getItem("bhakti_devotee");
@@ -50,6 +52,53 @@ export default function Profile() {
     };
 
     fetchLatestProfile();
+  }, [devotee]);
+
+  useEffect(() => {
+    const fetchSevaAnalytics = async () => {
+      if (devotee?.role !== "admin") return;
+
+      try {
+        const token = getToken();
+        const res = await fetch(
+          "http://localhost:5000/api/seva/admin/analytics",
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          },
+        );
+        const data = await res.json();
+        if (!data.success) {
+          throw new Error(data.message || "Failed to load seva analytics.");
+        }
+        setSevaAnalytics(data.analytics);
+      } catch (err) {
+        console.error("Failed to load seva analytics:", err);
+      }
+    };
+
+    fetchSevaAnalytics();
+  }, [devotee]);
+
+  useEffect(() => {
+    const fetchSevaHistory = async () => {
+      try {
+        const token = getToken();
+        if (!token) return;
+
+        const res = await fetch("http://localhost:5000/api/seva/history", {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        const data = await res.json();
+        if (!data.success) {
+          throw new Error(data.message || "Failed to load seva history.");
+        }
+        setSevaHistory(data.transactions || []);
+      } catch (err) {
+        console.error("Failed to load seva payment history:", err);
+      }
+    };
+
+    fetchSevaHistory();
   }, [devotee]);
 
   const handleLogout = () => {
@@ -224,6 +273,64 @@ export default function Profile() {
             </Link>
           </div>
         </section>
+
+        <section className="payment-history-section">
+          <div className="payment-history-header">
+            <div>
+              <h2>Online Seva Payment History</h2>
+              <p>Track the verification status of your payment requests.</p>
+            </div>
+            <strong>{sevaHistory.length} Requests</strong>
+          </div>
+
+          {sevaHistory.length === 0 ? (
+            <p className="payment-history-empty">No payment requests yet.</p>
+          ) : (
+            <div className="payment-history-list">
+              {sevaHistory.map((transaction) => (
+                <div className="payment-history-row" key={transaction._id}>
+                  <div>
+                    <strong>₹{transaction.amount}</strong>
+                    <span>UTR: {transaction.utrNumber}</span>
+                    <small>
+                      {new Date(transaction.createdAt).toLocaleString()}
+                    </small>
+                  </div>
+                  <span className={`payment-status ${transaction.status}`}>
+                    {transaction.status === "verified"
+                      ? "Accepted"
+                      : transaction.status === "rejected"
+                        ? "Rejected"
+                        : "Pending"}
+                  </span>
+                </div>
+              ))}
+            </div>
+          )}
+        </section>
+
+        {devotee?.role === "admin" && sevaAnalytics && (
+          <section className="admin-payment-analysis">
+            <h2>Seva Payment Analysis</h2>
+            <div className="admin-payment-analysis-grid">
+              <div className="admin-analysis-card pending">
+                <span>Pending</span>
+                <strong>{sevaAnalytics.pending.count}</strong>
+                <small>₹{sevaAnalytics.pending.amount}</small>
+              </div>
+              <div className="admin-analysis-card verified">
+                <span>Accepted</span>
+                <strong>{sevaAnalytics.verified.count}</strong>
+                <small>₹{sevaAnalytics.verified.amount}</small>
+              </div>
+              <div className="admin-analysis-card rejected">
+                <span>Rejected</span>
+                <strong>{sevaAnalytics.rejected.count}</strong>
+                <small>₹{sevaAnalytics.rejected.amount}</small>
+              </div>
+            </div>
+          </section>
+        )}
       </div>
     </div>
   );

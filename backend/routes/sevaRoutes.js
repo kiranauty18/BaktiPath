@@ -65,6 +65,61 @@ router.post("/pledge", protect, async (req, res) => {
   }
 });
 
+// @route   GET /api/seva/history
+// @desc    Get the logged-in devotee's seva payment history
+router.get("/history", protect, async (req, res) => {
+  try {
+    const transactions = await SevaTransaction.find({
+      devotee: req.user._id,
+    }).sort({ createdAt: -1 });
+
+    res.json({ success: true, transactions });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message || "Server error loading seva history.",
+    });
+  }
+});
+
+// @route   GET /api/seva/admin/analytics
+// @desc    Admin gets seva request status totals and amounts
+router.get("/admin/analytics", protect, adminOnly, async (req, res) => {
+  try {
+    const analytics = await SevaTransaction.aggregate([
+      {
+        $group: {
+          _id: "$status",
+          count: { $sum: 1 },
+          amount: { $sum: "$amount" },
+        },
+      },
+    ]);
+
+    const result = {
+      pending: { count: 0, amount: 0 },
+      verified: { count: 0, amount: 0 },
+      rejected: { count: 0, amount: 0 },
+    };
+
+    analytics.forEach((entry) => {
+      if (result[entry._id]) {
+        result[entry._id] = {
+          count: entry.count,
+          amount: entry.amount,
+        };
+      }
+    });
+
+    res.json({ success: true, analytics: result });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message || "Server error loading seva analytics.",
+    });
+  }
+});
+
 // @route   GET /api/seva/admin/pending
 // @desc    Admin lists seva submissions awaiting verification
 router.get("/admin/pending", protect, adminOnly, async (req, res) => {
