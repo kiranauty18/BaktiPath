@@ -1,5 +1,8 @@
 // src/services/api.js
-const API_BASE_URL = "http://localhost:5000/api";
+
+// Dynamically pick Vercel environment variable, fallback to localhost for development
+const BACKEND_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
+const API_BASE_URL = `${BACKEND_URL.replace(/\/+$/, "")}/api`;
 
 // Helper to retrieve auth headers with Bearer token
 const getAuthHeaders = () => {
@@ -41,7 +44,6 @@ export const authAPI = {
 };
 
 export const quizAPI = {
-  // score is sent with token; backend derives identity via req.user
   submitScore: async (score) => {
     const res = await fetch(`${API_BASE_URL}/quiz/submit`, {
       method: "POST",
@@ -53,7 +55,6 @@ export const quizAPI = {
 };
 
 export const japAPI = {
-  // completedMalas & lifetimeJap sent with token; backend updates req.user
   syncSadhana: async (completedMalas, lifetimeJap) => {
     const res = await fetch(`${API_BASE_URL}/jap/sync`, {
       method: "POST",
@@ -65,7 +66,6 @@ export const japAPI = {
 };
 
 export const leaderboardAPI = {
-  // Public endpoint
   getLeaderboard: async (filter = "all") => {
     const res = await fetch(`${API_BASE_URL}/leaderboard?filter=${filter}`);
     return res.json();
@@ -74,15 +74,9 @@ export const leaderboardAPI = {
 
 export const sevaAPI = {
   recordPledge: async (amount, utrNumber = "") => {
-    const storedUser = localStorage.getItem("bhakti_devotee");
-    const token = storedUser ? JSON.parse(storedUser).token : null;
-
-    const res = await fetch("http://localhost:5000/api/seva/pledge", {
+    const res = await fetch(`${API_BASE_URL}/seva/pledge`, {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
+      headers: getAuthHeaders(),
       body: JSON.stringify({ amount, utrNumber }),
     });
     return res.json();
