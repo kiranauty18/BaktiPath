@@ -67,16 +67,23 @@ export default function VoluntarySeva() {
   };
 
   const handleConfirmPayment = async () => {
+    if (utrNumber.trim().length < 6) {
+      alert("Kripya UPI Reference / UTR Number darj karein.");
+      return;
+    }
+
     setIsSubmitting(true);
     try {
       // Record pledge in MongoDB backend securely using JWT token
-      await sevaAPI.recordPledge(amount, utrNumber);
+      const response = await sevaAPI.recordPledge(amount, utrNumber);
+      if (!response.success) {
+        throw new Error(response.message || "Seva submission failed.");
+      }
       setShowQRModal(false);
       setIsSubmitted(true);
     } catch (error) {
       console.error("Failed to record seva pledge:", error);
-      setShowQRModal(false);
-      setIsSubmitted(true);
+      alert(error.message || "Seva submission failed. Please try again.");
     } finally {
       setIsSubmitting(false);
     }
@@ -177,7 +184,8 @@ export default function VoluntarySeva() {
 
             <h2>Dhanyavaad, {userName}!</h2>
             <p className="receipt-subtext">
-              Aapka seva sankalp safalata-purvak darj ho chuka hai.
+              Radhe Radhe! Aapka UTR No. prapt hua. Online seva admin bank
+              statement check karke ise verify karenge.
             </p>
 
             <div className="receipt-summary-box">
@@ -197,7 +205,7 @@ export default function VoluntarySeva() {
               )}
               <div className="receipt-row">
                 <span>Status</span>
-                <span className="receipt-status-badge">Recorded</span>
+                <span className="receipt-status-badge">Pending Verification</span>
               </div>
             </div>
 
@@ -285,12 +293,12 @@ export default function VoluntarySeva() {
                 {/* UTR Input */}
                 <div className="qr-utr-group">
                   <label htmlFor="utr-input">
-                    UPI Reference / UTR No. (Optional):
+                    UPI Reference / UTR No. (Required):
                   </label>
                   <input
                     id="utr-input"
                     type="text"
-                    placeholder="Enter 12-digit UTR Number"
+                    placeholder="Enter 12-digit UPI UTR No. (Required)"
                     value={utrNumber}
                     onChange={(e) => setUtrNumber(e.target.value)}
                     className="qr-utr-input"
@@ -301,7 +309,7 @@ export default function VoluntarySeva() {
                 <button
                   type="button"
                   onClick={handleConfirmPayment}
-                  disabled={isSubmitting}
+                  disabled={isSubmitting || utrNumber.trim().length < 6}
                   className="qr-confirm-btn"
                 >
                   <Heart size={16} fill="#ffffff" />
