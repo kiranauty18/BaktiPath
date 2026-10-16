@@ -1,9 +1,20 @@
 // src/services/api.js
 
-// Dynamically pick Vercel environment variable, fallback to localhost for development
+// Use configured backend locally, but never allow localhost configuration in production.
 const configuredBackendUrl =
   import.meta.env.VITE_API_URL || import.meta.env.VITE_API_BASE_URL;
-const BACKEND_URL = (configuredBackendUrl || "http://localhost:5000")
+const productionBackendUrl =
+  "https://radhakrishna-bhaktimarg-backend.onrender.com";
+const configuredIsLocalhost = /^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?/i.test(
+  configuredBackendUrl || "",
+);
+const BACKEND_URL = (
+  import.meta.env.DEV && configuredBackendUrl
+    ? configuredBackendUrl
+    : configuredBackendUrl && !configuredIsLocalhost
+      ? configuredBackendUrl
+      : productionBackendUrl
+)
   .replace(/\/+$/, "")
   .replace(/\/api$/, "");
 export const API_BASE_URL = `${BACKEND_URL}/api`;
