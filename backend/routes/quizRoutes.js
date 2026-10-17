@@ -22,6 +22,14 @@ const getCurrentWeekTag = () => {
   return `${date.getUTCFullYear()}-W${String(weekNo).padStart(2, "0")}`;
 };
 
+const hasCompleteLanguageContent = (languageContent, questionCount) =>
+  Boolean(
+    languageContent?.title &&
+      languageContent?.content &&
+      Array.isArray(languageContent.questions) &&
+      languageContent.questions.length === questionCount,
+  );
+
 // -------------------------------------------------------------
 // @route   GET /api/quiz/today-katha
 // -------------------------------------------------------------
@@ -30,7 +38,7 @@ router.get("/today-katha", protect, async (req, res) => {
     const today = getTodayDateString();
     const devotee = req.user;
 
-    const katha = await Katha.findOne({ scheduledDate: today }).lean();
+    let katha = await Katha.findOne({ scheduledDate: today }).lean();
 
     if (!katha) {
       return res.json({
@@ -45,6 +53,30 @@ router.get("/today-katha", protect, async (req, res) => {
     const hasAttemptedToday =
       devotee.lastQuizDate === today && (devotee.dailyQuizAttempts || 0) >= 1;
 
+    const languages = katha.languages || {};
+    const translationCodes = ["en", "mr", "sa"];
+    const missingTranslations = translationCodes.some(
+      (code) =>
+        !hasCompleteLanguageContent(
+          languages[code],
+          (katha.questions || []).length,
+        ),
+    );
+
+    if (missingTranslations) {
+      const generatedLanguages = await autoTranslateKathaAndQuestions({
+        title: katha.title,
+        content: katha.content,
+        questions: katha.questions || [],
+      });
+
+      katha = await Katha.findByIdAndUpdate(
+        katha._id,
+        { $set: { languages: generatedLanguages } },
+        { new: true, lean: true },
+      );
+    }
+
     // Sanitize default Hindi questions (strip correctIndex)
     const sanitizedQuestions = (katha.questions || []).map((q, idx) => ({
       _id: q._id ? q._id.toString() : String(idx),
@@ -55,10 +87,12 @@ router.get("/today-katha", protect, async (req, res) => {
     }));
 
     // Attach question IDs and indices to language variants
-    const languages = katha.languages || {};
+    const languagesWithQuestionIds = katha.languages || {};
     ["en", "mr", "sa"].forEach((code) => {
-      if (languages[code]?.questions) {
-        languages[code].questions = languages[code].questions.map((q, idx) => ({
+      if (languagesWithQuestionIds[code]?.questions) {
+        languagesWithQuestionIds[code].questions = languagesWithQuestionIds[
+          code
+        ].questions.map((q, idx) => ({
           ...q,
           _id: sanitizedQuestions[idx]?._id || String(idx),
           questionIndex: idx,
@@ -87,7 +121,7 @@ router.get("/today-katha", protect, async (req, res) => {
           content: katha.content,
           questions: sanitizedQuestions,
         },
-        ...languages,
+        ...languagesWithQuestionIds,
       },
     });
   } catch (error) {
