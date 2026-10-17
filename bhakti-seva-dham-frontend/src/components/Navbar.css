@@ -35,33 +35,23 @@
 }
 
 .site-brand-icon {
-  position: relative;
-  width: 40px;
-  height: 40px;
+  width: 42px;
+  height: 42px;
   border-radius: 50%;
   overflow: hidden;
   border: 1.5px solid #d4af37;
-  background: #fdfbf7;
+  background: linear-gradient(145deg, #fff8e8, #f5e4c5);
+  color: #7c1a2e;
   display: grid;
   place-items: center;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
 }
 
-.site-brand-icon img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-.brand-fallback-om {
-  display: none;
-  font-size: 18px;
+.site-brand-icon span {
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 24px;
   font-weight: 700;
-  color: #c95e00;
-}
-
-.site-brand-icon img[style*="display: none"] + .brand-fallback-om {
-  display: block;
+  line-height: 1;
 }
 
 .site-brand-text strong {
@@ -236,24 +226,36 @@
 .site-nav-drawer {
   display: none;
   flex-direction: column;
-  gap: 6px;
+  gap: 3px;
   padding: 14px 20px 20px;
   background: #fffdf9;
   border-top: 1px solid #eddcca;
+  box-shadow: 0 10px 20px rgba(74, 14, 23, 0.06);
 }
 
 .drawer-link {
-  display: block;
-  padding: 10px 14px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 42px;
+  padding: 9px 14px;
   border-radius: 8px;
   color: #4a0e17;
   font-size: 14px;
   font-weight: 600;
   text-decoration: none;
+  transition: background-color 0.18s ease, color 0.18s ease;
 }
 
-.drawer-link:hover {
+.drawer-link:hover,
+.drawer-link.nav-active {
   background: #f7ede1;
+  color: #7c1a2e;
+}
+
+.drawer-link svg {
+  color: #a87d10;
+  flex-shrink: 0;
 }
 
 .drawer-auth-row {
@@ -327,7 +329,33 @@
 
 @media (max-width: 480px) {
   .site-navbar-container {
-    padding: 0 16px;
+    padding: 0 18px;
     min-height: 60px;
+  }
+
+  .site-brand {
+    gap: 9px;
+  }
+
+  .site-brand-icon {
+    width: 38px;
+    height: 38px;
+  }
+
+  .site-brand-icon span {
+    font-size: 21px;
+  }
+
+  .site-brand-text strong {
+    font-size: 16px;
+  }
+
+  .site-brand-text small {
+    font-size: 9.5px;
+  }
+
+  .nav-menu-toggle {
+    width: 40px;
+    height: 40px;
   }
 }

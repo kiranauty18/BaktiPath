@@ -148,7 +148,8 @@ export default function Leaderboard() {
               className={`filter-tab ${filter === "jap" ? "active" : ""}`}
               onClick={() => setFilter("jap")}
             >
-              <span>📿 Naam Jap</span>
+              <Sparkles size={15} />
+              <span>Naam Jap</span>
             </button>
           </div>
 
@@ -177,8 +178,8 @@ export default function Leaderboard() {
           {/* Display historical notice ONLY when inspecting a past date */}
           {!isLive && selectedDate !== todayStr && (
             <div className="historical-notice-chip">
-              📜 Puraskar Vitran Record: Ye din <strong>{selectedDate}</strong>{" "}
-              ka finalized record hai.
+              Puraskar Vitran Record: Ye din <strong>{selectedDate}</strong> ka
+              finalized record hai.
             </div>
           )}
         </header>
@@ -209,7 +210,10 @@ export default function Leaderboard() {
                   <Trophy size={26} />
                 </div>
                 <div className="podium-meta">
-                  <span className="podium-rank-tag">🏆 1st Rank Devotee</span>
+                  <span className="podium-rank-tag">
+                    <Trophy size={13} />
+                    <span>1st Rank Devotee</span>
+                  </span>
                   <div className="podium-first-name">{winner.name}</div>
                   <div
                     className="podium-breakdown"

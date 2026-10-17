@@ -15,7 +15,7 @@ import { sevaAPI } from "../api/api";
 import { useAuth } from "../context/AuthContext";
 import "./Seva.css";
 
-const amountOptions = [50, 100, 200, 500];
+const amountOptions = [50, 100, 500];
 const UPI_ID = "9549464445@ibl";
 
 export default function VoluntarySeva() {

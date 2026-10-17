@@ -1,6 +1,18 @@
 import React, { useState } from "react";
 import { NavLink, Link, useNavigate } from "react-router-dom";
-import { Menu, X, LogIn, LogOut, User, ShieldCheck } from "lucide-react";
+import {
+  Menu,
+  X,
+  LogIn,
+  LogOut,
+  User,
+  ShieldCheck,
+  Trophy,
+  Music2,
+  Sparkles,
+  HeartHandshake,
+  House,
+} from "lucide-react";
 import { useAuth } from "../context/AuthContext";
 import "./Navbar.css";
 
@@ -29,14 +41,7 @@ export default function Navbar() {
         {/* Logo & Brand */}
         <Link to="/" className="site-brand" onClick={closeMenu}>
           <div className="site-brand-icon">
-            <img
-              src="/images/radhaRaman.png"
-              alt="Shri Radha Raman Ji"
-              onError={(e) => {
-                e.currentTarget.style.display = "none";
-              }}
-            />
-            <span className="brand-fallback-om">ॐ</span>
+            <span aria-hidden="true">ॐ</span>
           </div>
           <div className="site-brand-text">
             <strong>राधाकृष्ण भक्तिमार्ग</strong>
@@ -207,7 +212,8 @@ export default function Navbar() {
       {isOpen && (
         <div className="site-nav-drawer">
           <NavLink to="/" end onClick={closeMenu} className="drawer-link">
-            Home
+            <House size={17} aria-hidden="true" />
+            <span>Home</span>
           </NavLink>
 
           {/* Regular Devotee Mobile Links */}
@@ -218,30 +224,36 @@ export default function Navbar() {
                 onClick={closeMenu}
                 className="drawer-link"
               >
-                👤 My Profile
+                <User size={17} aria-hidden="true" />
+                <span>My Profile</span>
               </NavLink>
               <NavLink to="/quiz" onClick={closeMenu} className="drawer-link">
-                Daily Quiz
+                <Sparkles size={17} aria-hidden="true" />
+                <span>Daily Quiz</span>
               </NavLink>
               <NavLink
                 to="/leaderboard"
                 onClick={closeMenu}
                 className="drawer-link"
               >
-                Leaderboard
+                <Trophy size={17} aria-hidden="true" />
+                <span>Leaderboard</span>
               </NavLink>
               <NavLink
                 to="/bhajans"
                 onClick={closeMenu}
                 className="drawer-link"
               >
-                Bhajans &amp; Mantras
+                <Music2 size={17} aria-hidden="true" />
+                <span>Bhajans &amp; Mantras</span>
               </NavLink>
               <NavLink to="/jap" onClick={closeMenu} className="drawer-link">
-                Naam Jap
+                <Sparkles size={17} aria-hidden="true" />
+                <span>Naam Jap</span>
               </NavLink>
               <NavLink to="/seva" onClick={closeMenu} className="drawer-link">
-                Voluntary Seva
+                <HeartHandshake size={17} aria-hidden="true" />
+                <span>Voluntary Seva</span>
               </NavLink>
             </>
           )}
@@ -250,28 +262,32 @@ export default function Navbar() {
           {Boolean(devotee) && isAdmin && (
             <>
               <NavLink to="/admin" onClick={closeMenu} className="drawer-link">
-                🛡️ Admin Panel
+                <ShieldCheck size={17} aria-hidden="true" />
+                <span>Admin Panel</span>
               </NavLink>
               <NavLink
                 to="/leaderboard"
                 onClick={closeMenu}
                 className="drawer-link"
               >
-                Leaderboard
+                <Trophy size={17} aria-hidden="true" />
+                <span>Leaderboard</span>
               </NavLink>
               <NavLink
                 to="/bhajans"
                 onClick={closeMenu}
                 className="drawer-link"
               >
-                Bhajans Gallery
+                <Music2 size={17} aria-hidden="true" />
+                <span>Bhajans Gallery</span>
               </NavLink>
               <NavLink
                 to="/profile"
                 onClick={closeMenu}
                 className="drawer-link"
               >
-                👤 My Profile
+                <User size={17} aria-hidden="true" />
+                <span>My Profile</span>
               </NavLink>
             </>
           )}

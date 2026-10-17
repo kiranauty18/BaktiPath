@@ -160,7 +160,7 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
 }
 
 .seva-amount-chip {
@@ -188,6 +188,8 @@
 }
 
 .seva-custom-input {
+  flex: 1 1 100px;
+  min-width: 0;
   width: 100px;
   padding: 11px 12px;
   border: 1.5px solid var(--sv-border);
